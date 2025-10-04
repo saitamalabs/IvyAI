@@ -1,25 +1,23 @@
-"use client";
-
 import { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { githubAPI, PullRequest, PRFile } from '@/services/githubAPI';
 import { geminiAPI, AIReviewResult } from '@/services/geminiAPI';
-import { formatDate, getPrimaryLanguage } from '@/utils/formatters';
-import Header from './Header';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
-import { Loader2, AlertCircle, CheckCircle, XCircle, ArrowLeft, FileCode, MessageSquare, Send, Sparkles } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Textarea } from '@/components/ui/textarea';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Loader2, ArrowLeft, Code, GitPullRequest, AlertCircle, Sparkles, TestTube, Shield, FileText, Lightbulb, FileCode, CheckCircle, XCircle, MessageSquare, Send } from 'lucide-react';
+import { formatDate, getPrimaryLanguage } from '@/utils/formatters';
 import { toast } from 'sonner';
+import Header from './Header';
 
 interface PRReviewerProps {
   owner: string;
   repo: string;
   prNumber: number;
 }
-
 export default function PRReviewer({ owner, repo, prNumber }: PRReviewerProps) {
   const { accessToken } = useAuth();
   const router = useRouter();
@@ -31,6 +29,16 @@ export default function PRReviewer({ owner, repo, prNumber }: PRReviewerProps) {
   const [analyzing, setAnalyzing] = useState(false);
   const [posting, setPosting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
+  // New AI features states
+  const [generatedTests, setGeneratedTests] = useState<string>('');
+  const [securityScan, setSecurityScan] = useState<string>('');
+  const [refactoringSuggestions, setRefactoringSuggestions] = useState<string>('');
+  const [generatedDocs, setGeneratedDocs] = useState<string>('');
+  const [generatingTests, setGeneratingTests] = useState(false);
+  const [scanningcode, setScanningCode] = useState(false);
+  const [generatingDocs, setGeneratingDocs] = useState(false);
+  const [suggestingRefactoring, setSuggestingRefactoring] = useState(false);
 
   const loadPRDetails = useCallback(async () => {
     setLoading(true);
@@ -66,25 +74,46 @@ export default function PRReviewer({ owner, repo, prNumber }: PRReviewerProps) {
 
     // Get Gemini API key from environment
     const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+    console.log('[PR Reviewer] Gemini API key present:', !!apiKey);
+    
     if (!apiKey) {
-      toast.error('Gemini API key not configured');
-      setError('Please configure GEMINI_API_KEY in your environment variables');
+      toast.error('Gemini API key not configured', {
+        description: 'Please add NEXT_PUBLIC_GEMINI_API_KEY to your environment variables',
+        duration: 5000,
+      });
+      setError('Please configure NEXT_PUBLIC_GEMINI_API_KEY in your environment variables');
       return;
     }
 
     setAnalyzing(true);
     setError(null);
+    
     try {
+      console.log('[PR Reviewer] Starting AI analysis...');
+      toast.loading('Analyzing code with AI...', { id: 'ai-analysis' });
+      
       geminiAPI.setApiKey(apiKey);
       const language = getPrimaryLanguage(files);
+      console.log('[PR Reviewer] Detected language:', language);
+      console.log('[PR Reviewer] Files to analyze:', files.length);
+      
       const review = await geminiAPI.analyzeCodeReview(files, language);
+      console.log('[PR Reviewer] AI analysis completed:', review);
+      
       setAiReview(review);
       setComment(formatAIReviewForComment(review));
-      toast.success('AI analysis completed!');
-    } catch (err) {
-      setError('Failed to analyze code. Please try again.');
-      console.error(err);
-      toast.error('AI analysis failed');
+      
+      toast.success('AI analysis completed!', { id: 'ai-analysis' });
+    } catch (err: any) {
+      const errorMessage = err?.message || 'Unknown error occurred';
+      console.error('[PR Reviewer] AI analysis error:', err);
+      
+      setError(`Failed to analyze code: ${errorMessage}`);
+      toast.error('AI analysis failed', {
+        description: errorMessage,
+        id: 'ai-analysis',
+        duration: 5000,
+      });
     } finally {
       setAnalyzing(false);
     }
@@ -151,6 +180,94 @@ export default function PRReviewer({ owner, repo, prNumber }: PRReviewerProps) {
     if (aiReview) {
       setComment(formatAIReviewForComment(aiReview));
       toast.success('AI suggestion loaded');
+    }
+  };
+
+  const handleGenerateTests = async () => {
+    const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+    if (!apiKey) {
+      toast.error('Gemini API key not configured');
+      return;
+    }
+
+    setGeneratingTests(true);
+    try {
+      geminiAPI.setApiKey(apiKey);
+      const language = getPrimaryLanguage(files);
+      const allCode = files.map(f => f.patch || '').join('\n\n');
+      const tests = await geminiAPI.generateTests(allCode, language);
+      setGeneratedTests(tests);
+      toast.success('Tests generated successfully!');
+    } catch (err: any) {
+      toast.error('Failed to generate tests', { description: err?.message });
+    } finally {
+      setGeneratingTests(false);
+    }
+  };
+
+  const handleSecurityScan = async () => {
+    const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+    if (!apiKey) {
+      toast.error('Gemini API key not configured');
+      return;
+    }
+
+    setScanningCode(true);
+    try {
+      geminiAPI.setApiKey(apiKey);
+      const language = getPrimaryLanguage(files);
+      const allCode = files.map(f => f.patch || '').join('\n\n');
+      const scan = await geminiAPI.securityScan(allCode, language);
+      setSecurityScan(scan);
+      toast.success('Security scan completed!');
+    } catch (err: any) {
+      toast.error('Security scan failed', { description: err?.message });
+    } finally {
+      setScanningCode(false);
+    }
+  };
+
+  const handleGenerateDocs = async () => {
+    const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+    if (!apiKey) {
+      toast.error('Gemini API key not configured');
+      return;
+    }
+
+    setGeneratingDocs(true);
+    try {
+      geminiAPI.setApiKey(apiKey);
+      const language = getPrimaryLanguage(files);
+      const allCode = files.map(f => f.patch || '').join('\n\n');
+      const docs = await geminiAPI.generateDocumentation(allCode, language);
+      setGeneratedDocs(docs);
+      toast.success('Documentation generated!');
+    } catch (err: any) {
+      toast.error('Failed to generate documentation', { description: err?.message });
+    } finally {
+      setGeneratingDocs(false);
+    }
+  };
+
+  const handleSuggestRefactoring = async () => {
+    const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+    if (!apiKey) {
+      toast.error('Gemini API key not configured');
+      return;
+    }
+
+    setSuggestingRefactoring(true);
+    try {
+      geminiAPI.setApiKey(apiKey);
+      const language = getPrimaryLanguage(files);
+      const allCode = files.map(f => f.patch || '').join('\n\n');
+      const suggestions = await geminiAPI.suggestRefactoring(allCode, language);
+      setRefactoringSuggestions(suggestions);
+      toast.success('Refactoring suggestions generated!');
+    } catch (err: any) {
+      toast.error('Failed to generate suggestions', { description: err?.message });
+    } finally {
+      setSuggestingRefactoring(false);
     }
   };
 
@@ -254,116 +371,185 @@ export default function PRReviewer({ owner, repo, prNumber }: PRReviewerProps) {
           </CardContent>
         </Card>
 
-        {/* AI Analysis Section */}
+        {/* AI Tools Section */}
         <Card className="mb-6">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Sparkles className="w-5 h-5" />
-              AI Code Analysis
+              AI-Powered Tools
             </CardTitle>
             <CardDescription>
-              Let Gemini AI analyze this pull request for bugs, security issues, and best practices
+              Analyze, test, and improve your code with AI
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button 
-              onClick={analyzeWithAI}
-              disabled={analyzing || files.length === 0}
-              className="w-full mb-4"
-            >
-              {analyzing ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Analyzing Code...
-                </>
-              ) : (
-                <>
-                  <Sparkles className="w-4 h-4 mr-2" />
-                  Analyze with AI
-                </>
-              )}
-            </Button>
+            <Tabs defaultValue="review" className="w-full">
+              <TabsList className="grid w-full grid-cols-5">
+                <TabsTrigger value="review" className="text-xs">
+                  <Sparkles className="w-3 h-3 mr-1" />
+                  Review
+                </TabsTrigger>
+                <TabsTrigger value="security" className="text-xs">
+                  <Shield className="w-3 h-3 mr-1" />
+                  Security
+                </TabsTrigger>
+                <TabsTrigger value="tests" className="text-xs">
+                  <TestTube className="w-3 h-3 mr-1" />
+                  Tests
+                </TabsTrigger>
+                <TabsTrigger value="refactor" className="text-xs">
+                  <Lightbulb className="w-3 h-3 mr-1" />
+                  Refactor
+                </TabsTrigger>
+                <TabsTrigger value="docs" className="text-xs">
+                  <FileText className="w-3 h-3 mr-1" />
+                  Docs
+                </TabsTrigger>
+              </TabsList>
 
-            {error && (
-              <div className="p-4 bg-red-50 dark:bg-red-900/20 rounded-lg mb-4">
-                <div className="flex items-center gap-2 text-red-600 dark:text-red-400">
-                  <AlertCircle className="w-5 h-5" />
-                  <p>{error}</p>
-                </div>
-              </div>
-            )}
+              {/* Code Review Tab */}
+              <TabsContent value="review" className="space-y-4">
+                <Button 
+                  onClick={analyzeWithAI}
+                  disabled={analyzing || files.length === 0}
+                  className="w-full"
+                >
+                  {analyzing ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Analyzing Code...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-4 h-4 mr-2" />
+                      Analyze with AI
+                    </>
+                  )}
+                </Button>
 
-            {aiReview && (
-              <div className="space-y-4">
-                {/* Overall Score */}
-                <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                  <h4 className="font-semibold mb-2">Overall Quality Score</h4>
-                  <div className="flex items-center gap-2">
-                    <div className="text-3xl font-bold text-blue-600">
-                      {aiReview.overallScore}/10
-                    </div>
-                    {aiReview.overallScore >= 8 && <CheckCircle className="w-6 h-6 text-green-600" />}
-                    {aiReview.overallScore < 6 && <XCircle className="w-6 h-6 text-red-600" />}
-                  </div>
-                </div>
-
-                {/* Bugs */}
-                {aiReview.bugs.length > 0 && (
-                  <div className="p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
-                    <h4 className="font-semibold mb-2 flex items-center gap-2">
-                      🐛 Potential Bugs
-                    </h4>
-                    <ul className="list-disc list-inside space-y-1">
-                      {aiReview.bugs.map((bug, i) => (
-                        <li key={i} className="text-sm">{bug}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
-                {/* Security */}
-                {aiReview.security.length > 0 && (
+                {error && (
                   <div className="p-4 bg-red-50 dark:bg-red-900/20 rounded-lg">
-                    <h4 className="font-semibold mb-2 flex items-center gap-2">
-                      🔒 Security Concerns
-                    </h4>
-                    <ul className="list-disc list-inside space-y-1">
-                      {aiReview.security.map((sec, i) => (
-                        <li key={i} className="text-sm">{sec}</li>
-                      ))}
-                    </ul>
+                    <div className="flex items-center gap-2 text-red-600 dark:text-red-400">
+                      <AlertCircle className="w-5 h-5" />
+                      <p>{error}</p>
+                    </div>
                   </div>
                 )}
 
-                {/* Performance */}
-                {aiReview.performance.length > 0 && (
-                  <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
-                    <h4 className="font-semibold mb-2 flex items-center gap-2">
-                      ⚡ Performance Suggestions
-                    </h4>
-                    <ul className="list-disc list-inside space-y-1">
-                      {aiReview.performance.map((perf, i) => (
-                        <li key={i} className="text-sm">{perf}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
+                {aiReview && (
+                  <div className="space-y-4">
+                    <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                      <h4 className="font-semibold mb-2">Overall Quality Score</h4>
+                      <div className="flex items-center gap-2">
+                        <div className="text-3xl font-bold text-blue-600">{aiReview.overallScore}/10</div>
+                        {aiReview.overallScore >= 8 && <CheckCircle className="w-6 h-6 text-green-600" />}
+                        {aiReview.overallScore < 6 && <XCircle className="w-6 h-6 text-red-600" />}
+                      </div>
+                    </div>
 
-                {/* Best Practices */}
-                {aiReview.bestPractices.length > 0 && (
-                  <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                    <h4 className="font-semibold mb-2 flex items-center gap-2">
-                      ✨ Best Practices
-                    </h4>
-                    <ul className="list-disc list-inside space-y-1">
-                      {aiReview.bestPractices.map((bp, i) => (
-                        <li key={i} className="text-sm">{bp}</li>
-                      ))}
-                    </ul>
+                    {aiReview.bugs.length > 0 && (
+                      <div className="p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
+                        <h4 className="font-semibold mb-2">🐛 Potential Bugs</h4>
+                        <ul className="list-disc list-inside space-y-1">
+                          {aiReview.bugs.map((bug, i) => <li key={i} className="text-sm">{bug}</li>)}
+                        </ul>
+                      </div>
+                    )}
+
+                    {aiReview.security.length > 0 && (
+                      <div className="p-4 bg-red-50 dark:bg-red-900/20 rounded-lg">
+                        <h4 className="font-semibold mb-2">🔒 Security Concerns</h4>
+                        <ul className="list-disc list-inside space-y-1">
+                          {aiReview.security.map((sec, i) => <li key={i} className="text-sm">{sec}</li>)}
+                        </ul>
+                      </div>
+                    )}
+
+                    {aiReview.performance.length > 0 && (
+                      <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
+                        <h4 className="font-semibold mb-2">⚡ Performance</h4>
+                        <ul className="list-disc list-inside space-y-1">
+                          {aiReview.performance.map((perf, i) => <li key={i} className="text-sm">{perf}</li>)}
+                        </ul>
+                      </div>
+                    )}
+
+                    {aiReview.bestPractices.length > 0 && (
+                      <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                        <h4 className="font-semibold mb-2">✨ Best Practices</h4>
+                        <ul className="list-disc list-inside space-y-1">
+                          {aiReview.bestPractices.map((bp, i) => <li key={i} className="text-sm">{bp}</li>)}
+                        </ul>
+                      </div>
+                    )}
                   </div>
                 )}
-              </div>
-            )}
+              </TabsContent>
+
+              {/* Security Scan Tab */}
+              <TabsContent value="security" className="space-y-4">
+                <Button onClick={handleSecurityScan} disabled={scanningcode || files.length === 0} className="w-full">
+                  {scanningcode ? (
+                    <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Scanning...</>
+                  ) : (
+                    <><Shield className="w-4 h-4 mr-2" />Run Security Scan</>
+                  )}
+                </Button>
+                {securityScan && (
+                  <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                    <pre className="whitespace-pre-wrap text-sm">{securityScan}</pre>
+                  </div>
+                )}
+              </TabsContent>
+
+              {/* Generate Tests Tab */}
+              <TabsContent value="tests" className="space-y-4">
+                <Button onClick={handleGenerateTests} disabled={generatingTests || files.length === 0} className="w-full">
+                  {generatingTests ? (
+                    <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Generating...</>
+                  ) : (
+                    <><TestTube className="w-4 h-4 mr-2" />Generate Unit Tests</>
+                  )}
+                </Button>
+                {generatedTests && (
+                  <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                    <pre className="whitespace-pre-wrap text-sm font-mono">{generatedTests}</pre>
+                  </div>
+                )}
+              </TabsContent>
+
+              {/* Refactoring Tab */}
+              <TabsContent value="refactor" className="space-y-4">
+                <Button onClick={handleSuggestRefactoring} disabled={suggestingRefactoring || files.length === 0} className="w-full">
+                  {suggestingRefactoring ? (
+                    <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Analyzing...</>
+                  ) : (
+                    <><Lightbulb className="w-4 h-4 mr-2" />Suggest Refactoring</>
+                  )}
+                </Button>
+                {refactoringSuggestions && (
+                  <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                    <pre className="whitespace-pre-wrap text-sm">{refactoringSuggestions}</pre>
+                  </div>
+                )}
+              </TabsContent>
+
+              {/* Documentation Tab */}
+              <TabsContent value="docs" className="space-y-4">
+                <Button onClick={handleGenerateDocs} disabled={generatingDocs || files.length === 0} className="w-full">
+                  {generatingDocs ? (
+                    <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Generating...</>
+                  ) : (
+                    <><FileText className="w-4 h-4 mr-2" />Generate Documentation</>
+                  )}
+                </Button>
+                {generatedDocs && (
+                  <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                    <pre className="whitespace-pre-wrap text-sm">{generatedDocs}</pre>
+                  </div>
+                )}
+              </TabsContent>
+            </Tabs>
           </CardContent>
         </Card>
 

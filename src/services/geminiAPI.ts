@@ -128,12 +128,10 @@ Be constructive, specific, and actionable in your feedback.`;
     return result;
   }
 
-  async analyzeCodeReview(files: PRFile[], language: string): Promise<AIReviewResult> {
+  private async callGeminiAPI(prompt: string, maxTokens: number = 2048): Promise<string> {
     if (!this.apiKey) {
       throw new Error('Gemini API key not set');
     }
-
-    const prompt = this.createPrompt(files, language);
 
     try {
       const response = await fetch(`${this.baseUrl}?key=${this.apiKey}`, {
@@ -151,14 +149,15 @@ Be constructive, specific, and actionable in your feedback.`;
             temperature: 0.7,
             topK: 40,
             topP: 0.95,
-            maxOutputTokens: 2048,
+            maxOutputTokens: maxTokens,
           }
         }),
       });
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
-        throw new Error(errorData?.error?.message || `Gemini API error: ${response.status}`);
+        console.error('Gemini API error response:', errorData);
+        throw new Error(errorData?.error?.message || `Gemini API error: ${response.status} - ${response.statusText}`);
       }
 
       const data = await response.json();
@@ -167,13 +166,118 @@ Be constructive, specific, and actionable in your feedback.`;
         throw new Error('Invalid response from Gemini API');
       }
 
-      const analysisText = data.candidates[0].content.parts[0].text;
-      return this.parseResponse(analysisText);
-
+      return data.candidates[0].content.parts[0].text;
     } catch (error) {
-      console.error('Gemini API error:', error);
+      console.error('Gemini API call error:', error);
       throw error;
     }
+  }
+
+  async analyzeCodeReview(files: PRFile[], language: string): Promise<AIReviewResult> {
+    const prompt = this.createPrompt(files, language);
+    const analysisText = await this.callGeminiAPI(prompt);
+    return this.parseResponse(analysisText);
+  }
+
+  async explainCode(code: string, language: string): Promise<string> {
+    const prompt = `Explain this ${language} code in detail. Break down what each part does and why it's written this way:
+
+\`\`\`${language}
+${code}
+\`\`\`
+
+Provide a clear, beginner-friendly explanation.`;
+
+    return await this.callGeminiAPI(prompt, 1024);
+  }
+
+  async generateTests(code: string, language: string, framework?: string): Promise<string> {
+    const frameworkText = framework ? ` using ${framework}` : '';
+    const prompt = `Generate comprehensive unit tests for this ${language} code${frameworkText}:
+
+\`\`\`${language}
+${code}
+\`\`\`
+
+Include:
+1. Test cases for normal scenarios
+2. Edge cases
+3. Error handling tests
+4. Comments explaining what each test verifies
+
+Return only the test code, properly formatted.`;
+
+    return await this.callGeminiAPI(prompt, 2048);
+  }
+
+  async suggestRefactoring(code: string, language: string): Promise<string> {
+    const prompt = `Analyze this ${language} code and suggest refactoring improvements:
+
+\`\`\`${language}
+${code}
+\`\`\`
+
+Provide:
+1. Specific refactoring suggestions
+2. Improved code examples
+3. Explanation of why each refactoring improves the code
+4. Focus on: readability, maintainability, performance, and best practices`;
+
+    return await this.callGeminiAPI(prompt, 2048);
+  }
+
+  async securityScan(code: string, language: string): Promise<string> {
+    const prompt = `Perform a security audit of this ${language} code:
+
+\`\`\`${language}
+${code}
+\`\`\`
+
+Identify:
+1. Security vulnerabilities (SQL injection, XSS, CSRF, etc.)
+2. Insecure practices
+3. Data exposure risks
+4. Authentication/authorization issues
+5. Input validation problems
+
+For each issue, provide:
+- Severity (Critical/High/Medium/Low)
+- Explanation
+- Fix recommendation`;
+
+    return await this.callGeminiAPI(prompt, 2048);
+  }
+
+  async generateDocumentation(code: string, language: string): Promise<string> {
+    const prompt = `Generate comprehensive documentation for this ${language} code:
+
+\`\`\`${language}
+${code}
+\`\`\`
+
+Include:
+1. Overview/description
+2. Function/class documentation
+3. Parameter descriptions
+4. Return value descriptions
+5. Usage examples
+6. Any important notes or warnings
+
+Format using appropriate documentation style for ${language} (JSDoc, docstrings, etc.)`;
+
+    return await this.callGeminiAPI(prompt, 2048);
+  }
+
+  async codeCompletion(partialCode: string, language: string): Promise<string> {
+    const prompt = `Complete this ${language} code in a meaningful and logical way:
+
+\`\`\`${language}
+${partialCode}
+\`\`\`
+
+Provide only the completed code with brief inline comments explaining additions.`;
+
+    return await this.callGeminiAPI(prompt, 1024);
   }
 }
 
