@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { projectGenerator, ProjectConfig, Framework, Database, Styling } from '@/services/projectGenerator';
+import { aimlAPI } from '@/services/aimlAPI';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -78,6 +79,9 @@ export default function ProjectGeneratorComponent() {
     setCurrentStep('');
 
     try {
+      // Initialize AIML API with API key
+      aimlAPI.setApiKey(apiKey);
+
       const config: ProjectConfig = {
         name: projectName,
         description,
