@@ -48,6 +48,8 @@ bun.lockb
 
 # vercel
 .vercel
+.vercel/
+*.vercel
 
 # typescript
 *.tsbuildinfo

@@ -112,12 +112,41 @@ IvyAI/
 └── package.json         # Dependencies
 ```
 
+## 🚀 Deployment to Vercel
+
+1. **Push your code to GitHub**
+
+2. **Import project to Vercel**
+   - Go to [Vercel Dashboard](https://vercel.com/dashboard)
+   - Click "New Project"
+   - Import your GitHub repository
+
+3. **Configure Environment Variables**
+   
+   Add the following environment variables in Vercel project settings:
+   ```
+   NEXT_PUBLIC_GITHUB_CLIENT_ID=your_client_id
+   GITHUB_CLIENT_ID=your_client_id
+   GITHUB_CLIENT_SECRET=your_client_secret
+   NEXT_PUBLIC_GITHUB_REDIRECT_URI=https://your-domain.vercel.app/auth/callback
+   NEXT_PUBLIC_GEMINI_API_KEY=your_gemini_api_key
+   ```
+
+4. **Update GitHub OAuth App**
+   - Update the Authorization callback URL in your GitHub OAuth App settings
+   - Add: `https://your-domain.vercel.app/auth/callback`
+
+5. **Deploy**
+   - Vercel will automatically deploy your app
+   - Every push to main branch will trigger a new deployment
+
 ## 🔒 Security Notes
 
 - Never commit `.env` file to version control
 - Store sensitive credentials securely
 - The current implementation stores tokens in localStorage (consider using HTTP-only cookies for production)
 - Review and update dependencies regularly
+- Use environment variables for all sensitive data in production
 
 ## 📝 Known Issues
 
