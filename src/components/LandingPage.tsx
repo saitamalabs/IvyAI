@@ -66,7 +66,7 @@ export default function LandingPage() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Code className="w-8 h-8 text-blue-600" />
-              <h1 className="text-2xl font-bold text-gray-800 dark:text-white">AI Code Review</h1>
+              <h1 className="text-2xl font-bold text-gray-800 dark:text-white">IvyAI</h1>
             </div>
             <ThemeToggle />
           </div>
@@ -84,11 +84,11 @@ export default function LandingPage() {
           </div>
           
           <h2 className="text-5xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
-            AI Code Review
-            <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
-              Assistant
+              IvyAI
             </span>
+            <br />
+            AI Code Review Assistant
           </h2>
           
           <p className="text-xl text-gray-600 dark:text-gray-400 mb-8 max-w-3xl mx-auto">

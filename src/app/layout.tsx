@@ -7,8 +7,8 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { Toaster } from "@/components/ui/sonner";
 
 export const metadata: Metadata = {
-  title: "AI Code Review Assistant",
-  description: "Supercharge your code reviews with AI-powered insights using Google Gemini and GitHub integration",
+  title: "IvyAI - AI Code Review Assistant",
+  description: "IvyAI: Supercharge your code reviews with AI-powered insights using Google Gemini and GitHub integration",
 };
 
 export default function RootLayout({
@@ -28,7 +28,7 @@ export default function RootLayout({
           data-include-search-params="true"
           data-only-in-iframe="true"
           data-debug="true"
-          data-custom-data='{"appName": "YourApp", "version": "1.0.0", "greeting": "hi"}'
+          data-custom-data='{"appName": "IvyAI", "version": "1.0.0", "greeting": "hi"}'
         />
         <AuthProvider>
           {children}

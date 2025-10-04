@@ -23,7 +23,7 @@ export default function Header() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Code className="w-8 h-8 text-blue-600" />
-            <h1 className="text-2xl font-bold text-gray-800 dark:text-white">AI Code Review</h1>
+            <h1 className="text-2xl font-bold text-gray-800 dark:text-white">IvyAI</h1>
           </div>
 
           <div className="flex items-center gap-2">
