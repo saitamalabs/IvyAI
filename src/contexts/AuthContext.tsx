@@ -46,7 +46,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = () => {
     const clientId = process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID;
-    const redirectUri = process.env.NEXT_PUBLIC_GITHUB_REDIRECT_URI || `${window.location.origin}/auth/callback`;
+    const redirectUri = process.env.NEXT_PUBLIC_GITHUB_REDIRECT_URI || `${window.location.origin}/api/auth/callback`;
     const scope = 'repo read:user';
     
     if (!clientId) {
@@ -54,6 +54,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       alert('GitHub OAuth is not configured. Please set NEXT_PUBLIC_GITHUB_CLIENT_ID in your environment variables.');
       return;
     }
+    
+    console.log('[AuthContext] Starting GitHub OAuth flow');
+    console.log('[AuthContext] Redirect URI:', redirectUri);
     
     const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scope)}`;
     window.location.href = githubAuthUrl;

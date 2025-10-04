@@ -47,13 +47,13 @@ An intelligent code review assistant that leverages Google Gemini AI and GitHub 
    **GitHub OAuth Setup:**
    - Go to [GitHub Developer Settings](https://github.com/settings/developers)
    - Create a new OAuth App
-   - Set Authorization callback URL to: `http://localhost:3000/auth/callback`
+   - Set Authorization callback URL to: `http://localhost:3000/api/auth/callback`
    - Copy Client ID and Client Secret to your `.env` file:
      ```env
      NEXT_PUBLIC_GITHUB_CLIENT_ID=your_client_id_here
      GITHUB_CLIENT_ID=your_client_id_here
      GITHUB_CLIENT_SECRET=your_client_secret_here
-     NEXT_PUBLIC_GITHUB_REDIRECT_URI=http://localhost:3000/auth/callback
+     NEXT_PUBLIC_GITHUB_REDIRECT_URI=http://localhost:3000/api/auth/callback
      ```
 
    **Google Gemini API:**
@@ -128,13 +128,13 @@ IvyAI/
    NEXT_PUBLIC_GITHUB_CLIENT_ID=your_client_id
    GITHUB_CLIENT_ID=your_client_id
    GITHUB_CLIENT_SECRET=your_client_secret
-   NEXT_PUBLIC_GITHUB_REDIRECT_URI=https://your-domain.vercel.app/auth/callback
+   NEXT_PUBLIC_GITHUB_REDIRECT_URI=https://your-domain.vercel.app/api/auth/callback
    NEXT_PUBLIC_GEMINI_API_KEY=your_gemini_api_key
    ```
 
 4. **Update GitHub OAuth App**
    - Update the Authorization callback URL in your GitHub OAuth App settings
-   - Add: `https://your-domain.vercel.app/auth/callback`
+   - Add: `https://your-domain.vercel.app/api/auth/callback`
 
 5. **Deploy**
    - Vercel will automatically deploy your app
