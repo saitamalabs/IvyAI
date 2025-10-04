@@ -61,30 +61,168 @@ class GitHubAPI {
     this.token = token;
   }
 
+  /**
+   * Retry logic for transient failures (500, 502, 503, 504)
+   * Retries up to maxRetries times with exponential backoff
+   */
+  private async retryRequest<T>(
+    fn: () => Promise<T>,
+    maxRetries: number = 2,
+    baseDelay: number = 1000
+  ): Promise<T> {
+    let lastError: Error | null = null;
+
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        return await fn();
+      } catch (error: any) {
+        lastError = error;
+
+        // Don't retry for non-transient errors
+        const shouldRetry = error.status && [500, 502, 503, 504].includes(error.status);
+        
+        if (!shouldRetry || attempt === maxRetries) {
+          throw error;
+        }
+
+        // Exponential backoff: wait longer after each retry
+        const delay = baseDelay * Math.pow(2, attempt);
+        await new Promise(resolve => setTimeout(resolve, delay));
+      }
+    }
+
+    throw lastError;
+  }
+
+  /**
+   * Enhanced error handling for GitHub API requests
+   * Provides user-friendly error messages for different scenarios
+   * Includes automatic retry for transient server errors
+   */
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     if (!this.token) {
-      throw new Error('GitHub token not set');
+      throw new Error('Authentication required. Please sign in with GitHub.');
     }
 
-    const url = `${this.baseUrl}${endpoint}`;
-    const headers = {
-      'Authorization': `Bearer ${this.token}`,
-      'Accept': 'application/vnd.github.v3+json',
-      'Content-Type': 'application/json',
-      ...options.headers,
-    };
+    return this.retryRequest(async () => {
+      const url = `${this.baseUrl}${endpoint}`;
+      const headers = {
+        'Authorization': `Bearer ${this.token}`,
+        'Accept': 'application/vnd.github.v3+json',
+        'Content-Type': 'application/json',
+        ...options.headers,
+      };
 
-    const response = await fetch(url, {
-      ...options,
-      headers,
+      try {
+        const response = await fetch(url, {
+          ...options,
+          headers,
+        });
+
+        if (!response.ok) {
+          await this.handleErrorResponse(response, endpoint);
+        }
+
+        // Handle empty responses (e.g., DELETE requests)
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+          return response.json();
+        }
+        
+        return {} as T;
+      } catch (error) {
+        // Handle network errors
+        if (error instanceof TypeError) {
+          throw new Error('Network error. Please check your internet connection and try again.');
+        }
+        // Re-throw if it's already a handled error
+        throw error;
+      }
     });
+  }
 
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({ message: response.statusText }));
-      throw new Error(error.message || `GitHub API error: ${response.status}`);
+  /**
+   * Handle different HTTP error status codes with specific user-friendly messages
+   */
+  private async handleErrorResponse(response: Response, endpoint: string): Promise<never> {
+    let errorData: any = {};
+    
+    try {
+      errorData = await response.json();
+    } catch {
+      errorData = { message: response.statusText };
     }
 
-    return response.json();
+    const status = response.status;
+    let errorMessage = '';
+
+    switch (status) {
+      case 401:
+        errorMessage = 'Authentication failed. Your session may have expired. Please sign in again.';
+        break;
+
+      case 403:
+        // Check if it's rate limiting
+        if (response.headers.get('X-RateLimit-Remaining') === '0') {
+          const resetTime = response.headers.get('X-RateLimit-Reset');
+          const resetDate = resetTime ? new Date(parseInt(resetTime) * 1000) : null;
+          const timeUntilReset = resetDate 
+            ? Math.ceil((resetDate.getTime() - Date.now()) / 60000)
+            : 'unknown';
+          
+          errorMessage = `GitHub API rate limit exceeded. Please try again in ${timeUntilReset} minutes.`;
+        } else {
+          errorMessage = 'Access forbidden. You may not have permission to perform this action.';
+        }
+        break;
+
+      case 404:
+        errorMessage = 'Resource not found. The repository, file, or branch may not exist.';
+        break;
+
+      case 422:
+        // Validation errors - check for specific cases
+        if (errorData.errors && Array.isArray(errorData.errors)) {
+          const errorMessages = errorData.errors.map((e: any) => e.message).join(', ');
+          
+          if (errorMessages.includes('already exists')) {
+            const match = endpoint.match(/repos\/([^\/]+)\/([^\/]+)/);
+            const repoName = match ? match[2] : 'this name';
+            errorMessage = `A repository with the name "${repoName}" already exists. Please choose a different name.`;
+          } else if (errorMessages.includes('Name already exists')) {
+            errorMessage = 'This name is already taken. Please choose a different one.';
+          } else {
+            errorMessage = `Validation error: ${errorMessages}`;
+          }
+        } else if (errorData.message) {
+          errorMessage = `Validation error: ${errorData.message}`;
+        } else {
+          errorMessage = 'Invalid request. Please check your input and try again.';
+        }
+        break;
+
+      case 409:
+        errorMessage = 'Conflict. The resource you\'re trying to modify has been changed by someone else.';
+        break;
+
+      case 500:
+      case 502:
+      case 503:
+      case 504:
+        errorMessage = 'GitHub is experiencing issues. Please try again in a few moments.';
+        break;
+
+      default:
+        errorMessage = errorData.message || `GitHub API error (${status}). Please try again.`;
+    }
+
+    // Create error object with additional context
+    const error = new Error(errorMessage);
+    (error as any).status = status;
+    (error as any).endpoint = endpoint;
+    (error as any).originalError = errorData;
+    
+    throw error;
   }
 
   // Get authenticated user
@@ -147,22 +285,47 @@ class GitHubAPI {
   // Get diff for a pull request
   async getPullRequestDiff(owner: string, repo: string, prNumber: number): Promise<string> {
     if (!this.token) {
-      throw new Error('GitHub token not set');
+      throw new Error('Authentication required. Please sign in with GitHub.');
     }
 
     const url = `${this.baseUrl}/repos/${owner}/${repo}/pulls/${prNumber}`;
-    const response = await fetch(url, {
-      headers: {
-        'Authorization': `Bearer ${this.token}`,
-        'Accept': 'application/vnd.github.v3.diff',
-      },
-    });
+    
+    try {
+      const response = await fetch(url, {
+        headers: {
+          'Authorization': `Bearer ${this.token}`,
+          'Accept': 'application/vnd.github.v3.diff',
+        },
+      });
 
-    if (!response.ok) {
-      throw new Error(`Failed to fetch diff: ${response.status}`);
+      if (!response.ok) {
+        const status = response.status;
+        let errorMessage = '';
+
+        switch (status) {
+          case 401:
+            errorMessage = 'Authentication failed. Please sign in again.';
+            break;
+          case 403:
+            errorMessage = 'Access forbidden. You may not have permission to view this pull request.';
+            break;
+          case 404:
+            errorMessage = `Pull request #${prNumber} not found in ${owner}/${repo}.`;
+            break;
+          default:
+            errorMessage = `Failed to fetch pull request diff (${status}). Please try again.`;
+        }
+
+        throw new Error(errorMessage);
+      }
+
+      return response.text();
+    } catch (error) {
+      if (error instanceof TypeError) {
+        throw new Error('Network error. Please check your internet connection and try again.');
+      }
+      throw error;
     }
-
-    return response.text();
   }
 
   // Create a new repository
