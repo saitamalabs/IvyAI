@@ -8,8 +8,10 @@ import PRCard from './PRCard';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Loader2, AlertCircle, FolderGit2 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Loader2, AlertCircle, FolderGit2, Sparkles, Rocket, Code, GitBranch, Star, GitFork, ArrowRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 export default function Dashboard() {
   const { user, accessToken } = useAuth();
@@ -78,9 +80,123 @@ export default function Dashboard() {
             Welcome back, {user?.name || user?.login}!
           </h2>
           <p className="text-gray-600 dark:text-gray-400">
-            Select a repository to view and review pull requests
+            Your AI-powered coding workspace
           </p>
         </div>
+
+        {/* Quick Actions */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer border-blue-200 dark:border-blue-800">
+            <Link href="/playground">
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <Sparkles className="w-8 h-8 text-blue-600" />
+                  <ArrowRight className="w-5 h-5 text-gray-400" />
+                </div>
+                <CardTitle className="text-lg">AI Playground</CardTitle>
+                <CardDescription className="text-sm">
+                  Interactive coding with multi-model AI
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-xs text-muted-foreground">
+                  Generate, refactor, and analyze code
+                </div>
+              </CardContent>
+            </Link>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer border-purple-200 dark:border-purple-800">
+            <Link href="/projects">
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <Rocket className="w-8 h-8 text-purple-600" />
+                  <ArrowRight className="w-5 h-5 text-gray-400" />
+                </div>
+                <CardTitle className="text-lg">Project Generator</CardTitle>
+                <CardDescription className="text-sm">
+                  Create full-stack projects with AI
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-xs text-muted-foreground">
+                  Autonomous project scaffolding
+                </div>
+              </CardContent>
+            </Link>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow border-green-200 dark:border-green-800">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <Code className="w-8 h-8 text-green-600" />
+                <Badge variant="secondary">Active</Badge>
+              </div>
+              <CardTitle className="text-lg">PR Reviewer</CardTitle>
+              <CardDescription className="text-sm">
+                AI-powered code reviews
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-xs text-muted-foreground">
+                Select a repository below to review PRs
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Stats Overview */}
+        {user && (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <Card>
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Repositories</p>
+                    <p className="text-2xl font-bold">{repositories.length}</p>
+                  </div>
+                  <FolderGit2 className="w-8 h-8 text-blue-600 opacity-20" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Public Repos</p>
+                    <p className="text-2xl font-bold">{user.public_repos}</p>
+                  </div>
+                  <GitBranch className="w-8 h-8 text-green-600 opacity-20" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Followers</p>
+                    <p className="text-2xl font-bold">{user.followers}</p>
+                  </div>
+                  <Star className="w-8 h-8 text-yellow-600 opacity-20" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Following</p>
+                    <p className="text-2xl font-bold">{user.following}</p>
+                  </div>
+                  <GitFork className="w-8 h-8 text-purple-600 opacity-20" />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
 
         {/* Repository Selector */}
         <Card className="mb-8">

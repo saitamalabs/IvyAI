@@ -164,6 +164,143 @@ class GitHubAPI {
 
     return response.text();
   }
+
+  // Create a new repository
+  async createRepository(
+    name: string,
+    description: string,
+    isPrivate: boolean = false
+  ): Promise<Repository> {
+    return this.request('/user/repos', {
+      method: 'POST',
+      body: JSON.stringify({
+        name,
+        description,
+        private: isPrivate,
+        auto_init: true,
+      }),
+    });
+  }
+
+  // Create or update a file in a repository
+  async createOrUpdateFile(
+    owner: string,
+    repo: string,
+    path: string,
+    content: string,
+    message: string,
+    sha?: string
+  ): Promise<{ content: { sha: string }; commit: { sha: string } }> {
+    const encodedContent = btoa(unescape(encodeURIComponent(content)));
+    
+    return this.request(`/repos/${owner}/${repo}/contents/${path}`, {
+      method: 'PUT',
+      body: JSON.stringify({
+        message,
+        content: encodedContent,
+        ...(sha && { sha }),
+      }),
+    });
+  }
+
+  // Get file content from repository
+  async getFileContent(
+    owner: string,
+    repo: string,
+    path: string
+  ): Promise<{ content: string; sha: string }> {
+    const response = await this.request<{
+      content: string;
+      encoding: string;
+      sha: string;
+    }>(`/repos/${owner}/${repo}/contents/${path}`);
+
+    const content = atob(response.content);
+    return {
+      content,
+      sha: response.sha,
+    };
+  }
+
+  // Delete a file from repository
+  async deleteFile(
+    owner: string,
+    repo: string,
+    path: string,
+    message: string,
+    sha: string
+  ): Promise<void> {
+    await this.request(`/repos/${owner}/${repo}/contents/${path}`, {
+      method: 'DELETE',
+      body: JSON.stringify({
+        message,
+        sha,
+      }),
+    });
+  }
+
+  // List branches
+  async listBranches(owner: string, repo: string): Promise<{ name: string; commit: { sha: string } }[]> {
+    return this.request(`/repos/${owner}/${repo}/branches`);
+  }
+
+  // Create a branch
+  async createBranch(
+    owner: string,
+    repo: string,
+    branchName: string,
+    fromBranch: string = 'main'
+  ): Promise<{ ref: string; object: { sha: string } }> {
+    // Get SHA of the source branch
+    const sourceBranch = await this.request<{ object: { sha: string } }>(
+      `/repos/${owner}/${repo}/git/ref/heads/${fromBranch}`
+    );
+
+    return this.request(`/repos/${owner}/${repo}/git/refs`, {
+      method: 'POST',
+      body: JSON.stringify({
+        ref: `refs/heads/${branchName}`,
+        sha: sourceBranch.object.sha,
+      }),
+    });
+  }
+
+  // Fork a repository
+  async forkRepository(owner: string, repo: string): Promise<Repository> {
+    return this.request(`/repos/${owner}/${repo}/forks`, {
+      method: 'POST',
+    });
+  }
+
+  // Delete a repository
+  async deleteRepository(owner: string, repo: string): Promise<void> {
+    await this.request(`/repos/${owner}/${repo}`, {
+      method: 'DELETE',
+    });
+  }
+
+  // Get repository details
+  async getRepository(owner: string, repo: string): Promise<Repository> {
+    return this.request(`/repos/${owner}/${repo}`);
+  }
+
+  // Create a commit
+  async createCommit(
+    owner: string,
+    repo: string,
+    message: string,
+    tree: string,
+    parents: string[]
+  ): Promise<{ sha: string }> {
+    return this.request(`/repos/${owner}/${repo}/git/commits`, {
+      method: 'POST',
+      body: JSON.stringify({
+        message,
+        tree,
+        parents,
+      }),
+    });
+  }
 }
 
 export const githubAPI = new GitHubAPI();

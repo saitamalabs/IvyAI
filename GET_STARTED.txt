@@ -1,0 +1,210 @@
+================================================================================
+                         🤖 IVYAI - GET STARTED NOW
+================================================================================
+
+QUICK INSTALLATION (5 MINUTES)
+================================================================================
+
+1. INSTALL DEPENDENCIES
+   npm install
+
+2. ADD MISSING PACKAGES (Important!)
+   npm install openai@^4.77.0 @monaco-editor/react@^4.6.0
+
+3. SETUP ENVIRONMENT VARIABLES
+   Copy .env.example to .env:
+   
+   cp .env.example .env
+   
+   Then edit .env and add your API keys:
+   - Get GitHub OAuth: https://github.com/settings/developers
+   - Get AIML API Key: https://aimlapi.com
+   - Get Gemini Key (optional): https://makersuite.google.com/app/apikey
+
+4. START DEVELOPMENT SERVER
+   npm run dev
+
+5. OPEN BROWSER
+   http://localhost:3000
+
+
+REQUIRED API KEYS
+================================================================================
+
+1. GITHUB OAUTH (Required for login)
+   - Go to: https://github.com/settings/developers
+   - Click "New OAuth App"
+   - Fill in:
+     * Name: IvyAI (Development)
+     * Homepage: http://localhost:3000
+     * Callback: http://localhost:3000/api/auth/callback
+   - Copy Client ID and Secret to .env
+
+2. AIML API (Required for AI features)
+   - Go to: https://aimlapi.com
+   - Sign up and get API key
+   - Add to .env as NEXT_PUBLIC_AIMLAPI_KEY
+
+3. GOOGLE GEMINI (Optional - for legacy PR reviewer)
+   - Go to: https://makersuite.google.com/app/apikey
+   - Generate API key
+   - Add to .env as NEXT_PUBLIC_GEMINI_API_KEY
+
+
+ENVIRONMENT FILE (.env)
+================================================================================
+
+Create .env file with these values:
+
+NEXT_PUBLIC_GITHUB_CLIENT_ID=your_github_client_id
+GITHUB_CLIENT_ID=your_github_client_id
+GITHUB_CLIENT_SECRET=your_github_client_secret
+NEXT_PUBLIC_GITHUB_REDIRECT_URI=http://localhost:3000/api/auth/callback
+NEXT_PUBLIC_AIMLAPI_KEY=your_aimlapi_key
+NEXT_PUBLIC_GEMINI_API_KEY=your_gemini_key
+
+
+FEATURES TO TRY FIRST
+================================================================================
+
+1. AI PLAYGROUND (/playground)
+   - Write or paste code
+   - Click "Refactor" to improve code
+   - Click "Analyze" to find bugs
+   - Click "Test" to generate unit tests
+   - Try different AI models (Claude, Gemini, GPT-4)
+
+2. PROJECT GENERATOR (/projects)
+   - Enter project name and description
+   - Select framework (Next.js, React, Express, etc.)
+   - Choose features (Auth, API, Testing)
+   - Click "Generate Project"
+   - Deploy to GitHub automatically
+
+3. PR REVIEWER (/dashboard)
+   - Select a repository
+   - Choose a pull request
+   - Click "Analyze with AI"
+   - Get automated code review
+   - Post review to GitHub
+
+
+TROUBLESHOOTING
+================================================================================
+
+Problem: "Cannot find module '@monaco-editor/react'"
+Solution: npm install @monaco-editor/react@^4.6.0
+
+Problem: "Cannot find module 'openai'"
+Solution: npm install openai@^4.77.0
+
+Problem: GitHub OAuth not working
+Solution: Check callback URL matches exactly in both GitHub and .env
+
+Problem: AI not responding
+Solution: Verify NEXT_PUBLIC_AIMLAPI_KEY in .env file
+
+Problem: Build errors
+Solution: 
+  rm -rf .next node_modules
+  npm install
+  npm run dev
+
+
+PRODUCTION DEPLOYMENT (VERCEL)
+================================================================================
+
+1. Push code to GitHub
+2. Import project to Vercel (vercel.com)
+3. Add environment variables in Vercel settings
+4. Update GitHub OAuth callback to production URL
+5. Deploy!
+
+
+KEY FILES TO KNOW
+================================================================================
+
+Services:
+- src/services/aimlAPI.ts         - Multi-model AI integration
+- src/services/projectGenerator.ts - Project scaffolding
+- src/services/githubAPI.ts       - GitHub operations
+
+Components:
+- src/components/AIPlayground.tsx - Interactive code editor
+- src/components/ProjectGeneratorComponent.tsx - Project creator
+- src/components/Dashboard.tsx    - Main dashboard
+- src/components/PRReviewer.tsx   - Code reviewer
+
+Pages:
+- src/app/page.tsx                - Landing page
+- src/app/dashboard/page.tsx      - Dashboard
+- src/app/playground/page.tsx     - AI Playground
+- src/app/projects/page.tsx       - Project Generator
+
+
+DOCUMENTATION
+================================================================================
+
+📖 README.md              - Project overview and features
+📖 QUICKSTART.md          - 5-minute quick start
+📖 SETUP.md               - Complete setup guide
+📖 API.md                 - API documentation
+📖 FEATURES.md            - Feature guide
+📖 IMPLEMENTATION_SUMMARY.md - What's been built
+
+
+AVAILABLE COMMANDS
+================================================================================
+
+npm run dev      - Start development server (with Turbopack)
+npm run build    - Build for production
+npm run start    - Start production server
+npm run lint     - Run ESLint
+
+
+TECH STACK
+================================================================================
+
+Frontend:
+- Next.js 15 (App Router + Turbopack)
+- TypeScript 5
+- Tailwind CSS 4
+- Radix UI + shadcn/ui components
+- Monaco Editor (VS Code engine)
+
+AI:
+- AIML API (Claude 3.5 Sonnet, Gemini 2.0 Flash, GPT-4o)
+- Google Gemini 2.5 Pro (legacy)
+- OpenAI SDK for communication
+
+Backend:
+- GitHub OAuth + JWT
+- GitHub REST API
+- Vercel Serverless Functions
+
+
+SUPPORT
+================================================================================
+
+GitHub Issues: https://github.com/yourusername/IvyAI/issues
+Documentation: See all .md files in root directory
+Email: support@ivyai.dev
+
+
+================================================================================
+                      🎉 YOU'RE READY TO CODE!
+================================================================================
+
+Next Steps:
+1. ✅ Install dependencies
+2. ✅ Configure .env file
+3. ✅ Run npm run dev
+4. ✅ Open http://localhost:3000
+5. ✅ Sign in with GitHub
+6. ✅ Try AI Playground
+7. ✅ Generate a project
+8. ⭐ Star the repo!
+
+Happy Coding! 🚀
+
+Built with ❤️ by the IvyAI Team
