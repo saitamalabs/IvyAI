@@ -1,11 +1,16 @@
-# 🤖 IvyAI - AI Coding Agent SaaS Platform
+# 🤖 IvyAI - AI-Powered Development Platform
 
 [![Hacktoberfest 2025](https://img.shields.io/badge/Hacktoberfest-2025-blueviolet)](https://hacktoberfest.com)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Contributors](https://img.shields.io/github/contributors/yourusername/IvyAI)](https://github.com/yourusername/IvyAI/graphs/contributors)
+[![Next.js](https://img.shields.io/badge/Next.js-15-black)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)](https://www.typescriptlang.org/)
 
-A comprehensive AI coding agent that competes with GitHub Copilot. Build complete projects, review code, and accelerate development with multi-model AI integration (Claude 3.5 Sonnet, Gemini 2.0 Flash, GPT-4o).
+> **Your AI-powered coding companion that understands context, generates complete projects, and integrates seamlessly with GitHub.**
+
+IvyAI is a comprehensive AI development platform featuring 9 specialized AI agents powered by GPT-4o. From generating entire projects to reviewing PRs, managing repositories, and optimizing code - all through natural conversational interfaces.
+
+**🎯 Perfect for:** Developers, teams, startups, and open-source contributors who want to 10x their productivity.
 
 ## 🎃 Hacktoberfest 2025
 
@@ -21,176 +26,252 @@ A comprehensive AI coding agent that competes with GitHub Copilot. Build complet
 
 **Read our [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) before contributing.**
 
+---
+
+## 📸 Screenshots
+
+<div align="center">
+
+### Dashboard with 9 AI Agents
+![Dashboard](https://via.placeholder.com/800x400?text=Dashboard+Screenshot)
+
+### Chat Interface with Real Actions
+![Chat Interface](https://via.placeholder.com/800x400?text=Chat+Interface+Screenshot)
+
+### AI Playground
+![Playground](https://via.placeholder.com/800x400?text=Playground+Screenshot)
+
+</div>
+
+> **Note:** Replace placeholder images with actual screenshots of your application
+
+---
+
+## ⚡ Features at a Glance
+
+| 🤖 AI Agents | 💬 Chat Interface | 🔗 GitHub Actions | 🎨 UI/UX |
+|-------------|------------------|-------------------|---------|
+| 9 specialized agents | Natural conversations | Real API execution | Modern, intuitive |
+| GPT-4o powered | Context-aware | Create repos, files, PRs | Dark mode support |
+| Task-specific expertise | Scrollable history | Branch management | Responsive design |
+| Action execution | Real-time responses | Issue tracking | Monaco editor |
+
+---
+
 ## ✨ Key Features
 
-### 🚀 **AI Project Generator**
-- **Autonomous Project Scaffolding** - Generate complete full-stack projects from natural language descriptions
-- **Multi-Framework Support** - Next.js, React, Vue, Express, NestJS, Django, MERN, T3 Stack
-- **Database Integration** - PostgreSQL, MongoDB, MySQL, SQLite support
-- **Feature-Rich** - Authentication, REST/GraphQL APIs, Testing, Deployment configs
-- **GitHub Deployment** - Automatic repository creation and code push
+### 🤖 **9 Specialized AI Agents** (NEW!)
+
+Each agent is a conversational AI expert that can execute real GitHub actions:
+
+1. **🚀 AI Project Generator** - Build complete projects from ideas
+   - Conversational project planning
+   - Multi-framework support (Next.js, React, Vue, Django, etc.)
+   - Generates all files: code, configs, docs, tests
+   - Auto-deploys to GitHub with proper structure
+
+2. **🔍 PR Reviewer** - Intelligent code review
+   - Analyzes pull requests for bugs, security, performance
+   - Posts detailed review comments
+   - Suggests improvements and best practices
+   - Quality scoring (1-10 scale)
+
+3. **🏗️ GitHub Repo Agent** - Complete repository management
+   - Create/delete repositories
+   - Manage branches and files
+   - Create pull requests
+   - Handle issues and labels
+   - Full GitHub API integration
+
+4. **💻 Code Generator** - Production-ready code from descriptions
+   - Natural language to code
+   - Best practices and error handling
+   - Type-safe and well-documented
+   - Framework-agnostic
+
+5. **♻️ Code Refactor** - Improve existing code
+   - Modernize legacy code
+   - Apply design patterns
+   - Optimize structure
+   - Maintain functionality
+
+6. **🧪 Test Generator** - Comprehensive test suites
+   - Unit tests with edge cases
+   - Integration tests
+   - Mocking and assertions
+   - High coverage strategies
+
+7. **🔒 Security Scanner** - Vulnerability detection
+   - OWASP Top 10 checks
+   - Dependency scanning
+   - Code pattern analysis
+   - Fix recommendations
+
+8. **📚 Documentation Generator** - Auto-generate docs
+   - API documentation
+   - README files
+   - Inline comments
+   - Usage examples
+
+9. **⚡ Performance Optimizer** - Speed up your code
+   - Identify bottlenecks
+   - Optimize algorithms
+   - Reduce bundle size
+   - Improve load times
+
+### 💬 **Chat-First Interface**
+
+- **Natural Conversations** - Talk to agents like teammates
+- **Context-Aware** - Agents remember your project details
+- **Action Execution** - Not just suggestions, real GitHub actions
+- **Progress Tracking** - See actions execute in real-time
+- **Scrollable History** - Review past conversations
 
 ### 💻 **AI Playground**
-- **Multi-Model AI** - Claude 3.5 Sonnet (architecture), Gemini 2.0 Flash (code gen), GPT-4o (testing)
-- **Interactive Code Editor** - Monaco editor with syntax highlighting
-- **Real-Time AI Chat** - Natural language code generation and refactoring
-- **Code Analysis** - Bug detection, security scanning, performance optimization
-- **Test Generation** - Automated unit test creation
-- **Documentation** - Auto-generate inline docs and README files
 
-### 🔍 **AI Code Reviewer**
-- **PR Analysis** - Automated code review for GitHub pull requests
-- **Comprehensive Feedback** - Bugs, security, performance, best practices
-- **Quality Scoring** - 1-10 code quality assessment
-- **Direct Integration** - Post reviews as GitHub comments
-- **Security Scanning** - Vulnerability detection
+- **Monaco Editor** - VS Code-powered code editor
+- **Real-Time AI** - Instant code generation and refactoring
+- **Multiple Languages** - JavaScript, Python, TypeScript, etc.
+- **Quick Actions** - Refactor, analyze, test, document
 
-### 🔗 **GitHub Integration**
-- **Full API Support** - Repos, branches, PRs, commits, files
+### 🔗 **Full GitHub Integration**
+
 - **OAuth Authentication** - Secure GitHub sign-in
-- **Repository Management** - Create, fork, delete repositories
-- **File Operations** - Create, update, delete files programmatically
+- **Complete API Access** - All GitHub operations available
+- **Repository Operations** - Create, update, delete, fork
+- **Branch Management** - Create branches, PRs, commits
+- **File Operations** - Create, edit, delete files
+- **Issue Management** - Create and track issues
 
-## 🎯 Core Technologies
+## 🎯 Tech Stack
 
-- **Frontend**: Next.js 15 + TypeScript + Tailwind CSS 4
-- **AI**: AIML API (Claude 3.5 Sonnet, Gemini 2.0 Flash, GPT-4o) + Google Gemini
-- **Authentication**: GitHub OAuth + JWT
-- **Editor**: Monaco Editor (VS Code engine)
-- **UI**: Radix UI + shadcn/ui components
-- **Deployment**: Vercel-ready
+| Category | Technologies |
+|----------|-------------|
+| **Frontend** | Next.js 15, React 19, TypeScript 5 |
+| **Styling** | Tailwind CSS 4, shadcn/ui, Radix UI |
+| **AI/ML** | GPT-4o (via AIML API), OpenAI SDK |
+| **Authentication** | GitHub OAuth 2.0 |
+| **Code Editor** | Monaco Editor (VS Code engine) |
+| **APIs** | GitHub REST API, AIML API |
+| **Deployment** | Vercel (Serverless) |
+| **Package Manager** | npm / Bun |
 
-## 🚀 Getting Started
+## 🚀 Quick Start
 
 ### Prerequisites
 
 - **Node.js 18+** or Bun
-- **GitHub OAuth App** credentials ([Create here](https://github.com/settings/developers))
-- **AIML API Key** ([Get here](https://aimlapi.com))
-- **Google Gemini API Key** (optional, for legacy PR reviewer) ([Get here](https://makersuite.google.com/app/apikey))
+- **GitHub OAuth App** ([Create one](https://github.com/settings/developers))
+- **AIML API Key** ([Get it free](https://aimlapi.com))
 
 ### Installation
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/yourusername/IvyAI.git
-   cd IvyAI
-   ```
+```bash
+# 1. Clone the repo
+git clone https://github.com/yourusername/IvyAI.git
+cd IvyAI
 
-2. **Install dependencies**
-   ```bash
-   npm install
-   # or
-   bun install
-   ```
+# 2. Install dependencies
+npm install
+# or
+bun install
 
-3. **Set up environment variables**
-   
-   Copy `.env.example` to `.env`:
-   ```bash
-   cp .env.example .env
-   ```
+# 3. Set up environment variables
+cp .env.example .env
+# Edit .env with your API keys (see below)
 
-   Configure the following:
+# 4. Run the development server
+npm run dev
+```
 
-   **GitHub OAuth:**
-   ```env
-   NEXT_PUBLIC_GITHUB_CLIENT_ID=your_github_client_id
-   GITHUB_CLIENT_ID=your_github_client_id
-   GITHUB_CLIENT_SECRET=your_github_client_secret
-   NEXT_PUBLIC_GITHUB_REDIRECT_URI=http://localhost:3000/api/auth/callback
-   ```
+Visit [http://localhost:3000](http://localhost:3000) 🎉
 
-   **AIML API (Multi-Model AI):**
-   ```env
-   NEXT_PUBLIC_AIMLAPI_KEY=your_aimlapi_key
-   ```
+### Environment Variables
 
-   **Google Gemini (Legacy PR Reviewer):**
-   ```env
-   NEXT_PUBLIC_GEMINI_API_KEY=your_gemini_key
-   ```
+Create a `.env` file with the following:
 
-4. **Run the development server**
-   ```bash
-   npm run dev
-   # or
-   bun dev
-   ```
+```env
+# GitHub OAuth (Required)
+NEXT_PUBLIC_GITHUB_CLIENT_ID=your_github_client_id
+GITHUB_CLIENT_ID=your_github_client_id
+GITHUB_CLIENT_SECRET=your_github_client_secret
+NEXT_PUBLIC_GITHUB_REDIRECT_URI=http://localhost:3000/api/auth/callback
 
-5. **Open your browser**
-   
-   Navigate to [http://localhost:3000](http://localhost:3000)
+# AIML API (Required for AI features)
+NEXT_PUBLIC_AIMLAPI_KEY=your_aimlapi_key
 
-## 📖 Usage Guide
+# Google Gemini (Optional - legacy features)
+NEXT_PUBLIC_GEMINI_API_KEY=your_gemini_key
+```
 
-### 🎯 Dashboard
-- **Overview** - View GitHub stats, repositories, and quick actions
-- **Quick Access** - Navigate to Playground, Projects, or PR Reviewer
+**💡 Tip:** Get your GitHub OAuth credentials:
+1. Go to [GitHub Developer Settings](https://github.com/settings/developers)
+2. Click "New OAuth App"
+3. Set Homepage URL: `http://localhost:3000`
+4. Set Callback URL: `http://localhost:3000/api/auth/callback`
 
-### 💻 AI Playground
-1. **Write/Paste Code** - Use Monaco editor or load templates
-2. **Select AI Model** - Choose Auto, Claude, Gemini, or GPT-4
-3. **Natural Language Prompts** - Describe what you want
-4. **Quick Actions**:
-   - **Refactor** - Improve code quality and structure
-   - **Analyze** - Get bugs, security, performance insights
-   - **Test** - Generate comprehensive unit tests
-   - **Document** - Add inline comments and docs
-   - **Explain** - Get detailed code explanations
-5. **Apply Changes** - Use generated code in your editor
+## 📖 How to Use
 
-### 🚀 Project Generator
-1. **Project Details** - Enter name and description
-2. **Select Stack**:
-   - Framework (Next.js, React, Vue, Express, etc.)
-   - Database (PostgreSQL, MongoDB, MySQL, etc.)
-   - Styling (Tailwind, CSS Modules, etc.)
-3. **Choose Features**:
-   - Authentication (JWT + bcrypt)
-   - API (REST or GraphQL)
-   - Testing (Vitest)
-   - Deployment configs
-4. **Generate** - AI creates complete project structure
-5. **Deploy to GitHub** - Automatic repo creation and push
-6. **Clone & Run** - Follow setup instructions
+### 1️⃣ Sign in with GitHub
 
-### 🔍 PR Reviewer
-1. **Select Repository** - Choose from your GitHub repos
-2. **View Pull Requests** - Browse all PRs
-3. **AI Analysis** - Get automated code review
-4. **Security Scan** - Check for vulnerabilities
-5. **Generate Tests** - Create test cases for PR code
-6. **Post Review** - Add AI feedback to GitHub PR
+Click "Sign in with GitHub" to authenticate and grant repository access.
 
-## 🛠️ Technology Stack
+### 2️⃣ Choose an AI Agent
 
-### Frontend
-- **Framework:** Next.js 15 with App Router & Turbopack
-- **Language:** TypeScript 5
-- **Styling:** Tailwind CSS 4
-- **UI Components:** Radix UI + shadcn/ui
-- **Editor:** Monaco Editor (@monaco-editor/react)
-- **Animations:** Framer Motion
-- **Icons:** Lucide React
+From the dashboard, select one of 9 AI agents based on your needs:
 
-### AI Integration
-- **AIML API:**
-  - Claude 3.5 Sonnet (anthropic/claude-3.5-sonnet)
-  - Gemini 2.0 Flash (google/gemini-2.0-flash-exp)
-  - GPT-4o (openai/gpt-4o)
-- **Google Gemini:** 2.5 Pro (legacy PR reviewer)
-- **OpenAI SDK:** For AIML API communication
+```
+🚀 AI Project Generator   →  Build complete projects
+🔍 PR Reviewer            →  Review pull requests
+🏗️ GitHub Repo Agent      →  Manage repositories
+💻 Code Generator         →  Generate code snippets
+♻️ Code Refactor          →  Improve existing code
+🧪 Test Generator         →  Create test suites
+🔒 Security Scanner       →  Find vulnerabilities
+📚 Doc Generator          →  Generate documentation
+⚡ Performance Optimizer  →  Optimize code speed
+```
 
-### Backend & APIs
-- **Authentication:** GitHub OAuth + JWT
-- **GitHub API:** Full REST API integration
-- **API Client:** Native Fetch + OpenAI SDK
+### 3️⃣ Chat with the Agent
 
-### Deployment
-- **Platform:** Vercel
-- **Build:** Next.js optimized production build
-- **Environment:** Edge-ready serverless functions
+**Example: AI Project Generator**
+```
+You: "I want to build a todo app"
+Agent: "Great! What tech stack would you prefer?"
+You: "Next.js with TypeScript and PostgreSQL"
+Agent: "Perfect! What should we call the repository?"
+You: "my-todo-app"
+Agent: [Creates repo + generates all files + deploys to GitHub] ✅
+```
+
+**Example: GitHub Repo Agent**
+```
+You: "Create a new repository called 'awesome-project'"
+Agent: "Should it be public or private?"
+You: "Public, and add a README"
+Agent: [Creates repository with README] ✅
+```
+
+**Example: Code Generator**
+```
+You: "Generate a React component for a user profile card"
+Agent: [Generates complete component with TypeScript, props, and styling] ✅
+```
+
+### 4️⃣ AI Playground (Alternative)
+
+For quick code tasks without GitHub integration:
+1. Open AI Playground
+2. Paste or write code
+3. Use quick actions: Refactor, Analyze, Test, Document
+4. Copy generated code
+
+### 5️⃣ Review Results
+
+- All agent actions show real-time progress
+- View created repos, files, PRs on GitHub
+- Chat history is scrollable
+- Actions can be reviewed and verified
 
 ## 📁 Project Structure
 
@@ -198,37 +279,33 @@ A comprehensive AI coding agent that competes with GitHub Copilot. Build complet
 IvyAI/
 ├── src/
 │   ├── app/
-│   │   ├── api/
-│   │   │   └── auth/              # GitHub OAuth endpoints
-│   │   ├── dashboard/             # Main dashboard
-│   │   ├── playground/            # AI Playground
-│   │   ├── projects/              # Project Generator
-│   │   ├── review/                # PR Reviewer
-│   │   ├── layout.tsx             # Root layout
-│   │   └── page.tsx               # Landing page
+│   │   ├── agent/[agentId]/      # Dynamic agent pages
+│   │   ├── api/auth/             # GitHub OAuth endpoints
+│   │   ├── dashboard/            # Main dashboard
+│   │   ├── playground/           # AI Playground
+│   │   ├── projects/             # Project Generator
+│   │   └── page.tsx              # Landing page
 │   ├── components/
-│   │   ├── ui/                    # shadcn/ui components
-│   │   ├── AIPlayground.tsx       # Interactive code editor
-│   │   ├── ProjectGeneratorComponent.tsx
-│   │   ├── Dashboard.tsx
-│   │   ├── PRReviewer.tsx
-│   │   ├── Header.tsx
-│   │   └── LandingPage.tsx
+│   │   ├── ui/                   # shadcn/ui components
+│   │   ├── AgentInterface.tsx    # Chat interface for all agents
+│   │   ├── Dashboard.tsx         # Agent grid view
+│   │   ├── AIPlayground.tsx      # Code editor
+│   │   ├── Header.tsx            # Navigation
+│   │   └── ...
 │   ├── services/
-│   │   ├── aimlAPI.ts             # Multi-model AI service
-│   │   ├── geminiAPI.ts           # Google Gemini service
-│   │   ├── githubAPI.ts           # GitHub API client
-│   │   └── projectGenerator.ts    # Project scaffolding
+│   │   ├── aimlAPI.ts            # GPT-4o integration
+│   │   ├── githubAPI.ts          # GitHub API client
+│   │   └── projectGenerator.ts   # Project scaffolding
 │   ├── contexts/
-│   │   └── AuthContext.tsx        # Auth state management
-│   ├── hooks/                     # Custom React hooks
-│   ├── lib/                       # Utility libraries
-│   └── utils/                     # Helper functions
-├── public/                        # Static assets
-├── .env.example                   # Environment template
-├── package.json                   # Dependencies
-├── tailwind.config.js             # Tailwind configuration
-└── tsconfig.json                  # TypeScript configuration
+│   │   └── AuthContext.tsx       # Authentication state
+│   └── lib/                      # Utilities
+├── .github/
+│   ├── ISSUE_TEMPLATE/           # Issue templates
+│   └── PULL_REQUEST_TEMPLATE.md  # PR template
+├── CODE_OF_CONDUCT.md            # Community guidelines
+├── CONTRIBUTING.md               # Contribution guide
+├── SECURITY.md                   # Security policy
+└── README.md                     # This file
 ```
 
 ## 🚀 Deployment to Vercel
@@ -307,47 +384,33 @@ https://your-app.vercel.app/api/auth/callback
 - Rotate keys after team member changes
 - Monitor API usage for anomalies
 
-## 🎨 AI Model Selection Guide
+## 🤖 AI Capabilities
 
-### When to Use Each Model
+**Powered by GPT-4o via AIML API**
 
-**Claude 3.5 Sonnet** (Best for):
-- 🏗️ Architecture planning and design
-- 🔄 Complex refactoring tasks
+All agents use OpenAI's GPT-4o model, which excels at:
+- 🧠 Understanding complex requirements
+- 💬 Natural conversations
+- 🔄 Multi-step task execution
+- 📝 Code generation and refactoring
+- 🧪 Test creation
+- 🔍 Code review and analysis
 - 📚 Documentation generation
-- 🔍 In-depth code reviews
-- 🧠 Multi-step reasoning
+- ⚡ Fast response times
 
-**Gemini 2.0 Flash** (Best for):
-- ⚡ Fast code generation
-- 🚀 Boilerplate creation
-- 🔧 Quick fixes and snippets
-- 📝 Simple refactoring
-- 💨 Autocomplete suggestions
+## 📊 IvyAI vs Alternatives
 
-**GPT-4o** (Best for):
-- 🧪 Test case generation
-- 🐛 Bug identification and fixes
-- 🔧 General coding tasks
-- 💡 Code explanations
-- ⚖️ Balanced performance/quality
-
-**Auto Mode**:
-- 🤖 Automatically selects best model based on task
-- Analyzes prompt keywords
-- Optimizes for speed vs quality
-
-## 📊 Features Comparison
-
-| Feature | IvyAI | GitHub Copilot | Cursor |
-|---------|-------|----------------|--------|
-| Multi-Model AI | ✅ (3 models) | ❌ | ✅ |
-| Project Generation | ✅ | ❌ | ❌ |
-| Code Review | ✅ | ❌ | Limited |
-| GitHub Integration | ✅ Full | ✅ Limited | ❌ |
-| Interactive Playground | ✅ | ❌ | ✅ |
-| Free Tier | ✅ | ❌ | Limited |
-| Self-Hosted | ✅ | ❌ | ❌ |
+| Feature | IvyAI | GitHub Copilot | Cursor | v0.dev |
+|---------|-------|----------------|--------|--------|
+| **Conversational AI Agents** | ✅ 9 agents | ❌ | Limited | ❌ |
+| **Full Project Generation** | ✅ | ❌ | ❌ | ✅ UI only |
+| **GitHub Integration** | ✅ Full API | Limited | ❌ | ❌ |
+| **PR Review** | ✅ | ❌ | Limited | ❌ |
+| **Repository Management** | ✅ | ❌ | ❌ | ❌ |
+| **Code Playground** | ✅ | ❌ | ✅ | ❌ |
+| **Free Tier** | ✅ | ❌ | Limited | ✅ |
+| **Self-Hosted** | ✅ | ❌ | ❌ | ❌ |
+| **Action Execution** | ✅ Real actions | ❌ | ❌ | ❌ |
 
 ## 🐛 Troubleshooting
 
@@ -494,57 +557,83 @@ Please read and follow our [Code of Conduct](CODE_OF_CONDUCT.md) to keep our com
 - 🐛 Report bugs via [Issues](https://github.com/yourusername/IvyAI/issues)
 - 📧 Email: contribute@ivyai.dev
 
-## 📈 Roadmap
+## 🗺️ Roadmap
 
-### Phase 1 (Current) ✅
-- [x] Multi-model AI integration
-- [x] AI Playground
-- [x] Project Generator
-- [x] PR Reviewer
-- [x] GitHub integration
+### ✅ Phase 1 - Core Platform (Completed)
+- [x] 9 specialized AI agents
+- [x] Chat-first interfaces
+- [x] Full GitHub API integration
+- [x] AI Project Generator
+- [x] PR Review system
+- [x] AI Playground with Monaco Editor
+- [x] Real-time action execution
+- [x] Hacktoberfest 2025 setup
 
-### Phase 2 (Q1 2026)
-- [ ] VS Code Extension
+### 🚧 Phase 2 - Enhanced Features (In Progress)
+- [ ] Agent conversation history persistence
+- [ ] Multi-file project editing
+- [ ] Batch operations (create multiple repos/files)
+- [ ] Template library for common projects
+- [ ] AI-powered code search
+- [ ] Integration with popular IDEs
+
+### 🔮 Phase 3 - Enterprise & Scaling (Planned)
 - [ ] Team collaboration features
-- [ ] Custom AI model training
-- [ ] Project templates marketplace
+- [ ] VS Code Extension
+- [ ] Custom AI model fine-tuning
+- [ ] CI/CD pipeline integration
 - [ ] Advanced analytics dashboard
-
-### Phase 3 (Q2 2026)
-- [ ] JetBrains plugin
-- [ ] CLI tool
-- [ ] CI/CD integration
-- [ ] Mobile app
 - [ ] API for third-party integrations
+- [ ] Mobile app
+
+**Want to contribute?** Check out our [issues](https://github.com/yourusername/IvyAI/issues) labeled `enhancement` or `hacktoberfest`!
 
 ## 📄 License
 
-MIT License - see [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
+## 🙏 Credits & Acknowledgments
 
-- **AIML API** - Multi-model AI infrastructure
-- **Anthropic** - Claude 3.5 Sonnet
-- **Google** - Gemini 2.0 Flash
-- **OpenAI** - GPT-4o
-- **Vercel** - Hosting and deployment
-- **shadcn/ui** - Beautiful UI components
-- **Next.js** - React framework
-- **GitHub** - OAuth and API
+**Powered by:**
+- [OpenAI GPT-4o](https://openai.com/) - AI model via AIML API
+- [AIML API](https://aimlapi.com/) - Multi-model AI infrastructure
+- [Next.js](https://nextjs.org/) - React framework
+- [Vercel](https://vercel.com/) - Hosting and deployment
+- [GitHub](https://github.com/) - OAuth and API
+- [shadcn/ui](https://ui.shadcn.com/) - Beautiful UI components
+- [Tailwind CSS](https://tailwindcss.com/) - Styling
+- [Monaco Editor](https://microsoft.github.io/monaco-editor/) - Code editing
 
-## 📞 Support
+## 💬 Community & Support
 
-- **Issues**: [GitHub Issues](https://github.com/yourusername/IvyAI/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/yourusername/IvyAI/discussions)
-- **Email**: support@ivyai.dev
-- **Discord**: [Join our community](https://discord.gg/ivyai)
+- **🐛 Bug Reports**: [GitHub Issues](https://github.com/yourusername/IvyAI/issues/new?template=bug_report.md)
+- **💡 Feature Requests**: [GitHub Issues](https://github.com/yourusername/IvyAI/issues/new?template=feature_request.md)
+- **💬 Discussions**: [GitHub Discussions](https://github.com/yourusername/IvyAI/discussions)
+- **🎃 Hacktoberfest**: [Contribution Guide](CONTRIBUTING.md)
+- **📧 Email**: support@ivyai.dev
 
-## ⭐ Star History
+## ⭐ Show Your Support
 
-If you find IvyAI useful, please consider giving it a star! ⭐
+If IvyAI helps you code faster, please consider:
+- ⭐ Starring the repository
+- 🐦 Sharing on social media
+- 🤝 Contributing to the project
+- 📝 Writing about your experience
+
+## 🤝 Contributors
+
+Thanks to all our amazing contributors! 🎉
+
+[![Contributors](https://contrib.rocks/image?repo=yourusername/IvyAI)](https://github.com/yourusername/IvyAI/graphs/contributors)
 
 ---
 
-**Built with ❤️ by developers, for developers**
+<div align="center">
 
-**Powered by**: Next.js 15 • TypeScript • Tailwind CSS • Claude • Gemini • GPT-4 • GitHub API
+**Built with ❤️ for developers, by developers**
+
+**Powered by**: Next.js 15 • TypeScript 5 • GPT-4o • GitHub API • Tailwind CSS 4
+
+[⬆ Back to Top](#-ivyai---ai-powered-development-platform)
+
+</div>
