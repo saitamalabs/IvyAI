@@ -318,6 +318,43 @@ class GitHubAPI {
       }),
     });
   }
+
+  // Create a pull request
+  async createPullRequest(
+    owner: string,
+    repo: string,
+    title: string,
+    body: string,
+    head: string,
+    base: string = 'main'
+  ): Promise<PullRequest> {
+    return this.request(`/repos/${owner}/${repo}/pulls`, {
+      method: 'POST',
+      body: JSON.stringify({
+        title,
+        body,
+        head,
+        base,
+      }),
+    });
+  }
+
+  // Update repository
+  async updateRepository(
+    owner: string,
+    repo: string,
+    data: {
+      name?: string;
+      description?: string;
+      private?: boolean;
+      homepage?: string;
+    }
+  ): Promise<Repository> {
+    return this.request(`/repos/${owner}/${repo}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+  }
 }
 
 export const githubAPI = new GitHubAPI();

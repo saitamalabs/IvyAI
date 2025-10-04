@@ -191,6 +191,39 @@ export default function AgentInterface({
       }
     }
 
+    if (response.includes('[CREATE_BRANCH]')) {
+      const match = response.match(/\[CREATE_BRANCH\]([\s\S]*?)\[\/CREATE_BRANCH\]/);
+      if (match) {
+        try {
+          return { type: 'create_branch', data: JSON.parse(match[1]) };
+        } catch (e) {
+          return null;
+        }
+      }
+    }
+
+    if (response.includes('[CREATE_PR]')) {
+      const match = response.match(/\[CREATE_PR\]([\s\S]*?)\[\/CREATE_PR\]/);
+      if (match) {
+        try {
+          return { type: 'create_pr', data: JSON.parse(match[1]) };
+        } catch (e) {
+          return null;
+        }
+      }
+    }
+
+    if (response.includes('[DELETE_FILE]')) {
+      const match = response.match(/\[DELETE_FILE\]([\s\S]*?)\[\/DELETE_FILE\]/);
+      if (match) {
+        try {
+          return { type: 'delete_file', data: JSON.parse(match[1]) };
+        } catch (e) {
+          return null;
+        }
+      }
+    }
+
     return null;
   };
 
@@ -327,6 +360,76 @@ export default function AgentInterface({
           await loadRepositories();
           break;
 
+        case 'create_branch':
+          if (!selectedRepo) {
+            toast.error('Please select a repository first');
+            return;
+          }
+          const [ownerBranch, repoBranch] = selectedRepo.full_name.split('/');
+          result = await githubAPI.createBranch(
+            ownerBranch,
+            repoBranch,
+            action.data.branchName,
+            action.data.fromBranch || 'main'
+          );
+          
+          setMessages(prev => prev.map((msg, idx) => 
+            idx === messageIndex 
+              ? { ...msg, action: { ...msg.action!, status: 'completed', data: result } }
+              : msg
+          ));
+          
+          toast.success(`Branch "${action.data.branchName}" created!`);
+          break;
+
+        case 'create_pr':
+          if (!selectedRepo) {
+            toast.error('Please select a repository first');
+            return;
+          }
+          const [ownerPR, repoPR] = selectedRepo.full_name.split('/');
+          result = await githubAPI.createPullRequest(
+            ownerPR,
+            repoPR,
+            action.data.title,
+            action.data.body || '',
+            action.data.head,
+            action.data.base || 'main'
+          );
+          
+          setMessages(prev => prev.map((msg, idx) => 
+            idx === messageIndex 
+              ? { ...msg, action: { ...msg.action!, status: 'completed', data: result } }
+              : msg
+          ));
+          
+          toast.success(`Pull Request #${result.number} created!`);
+          break;
+
+        case 'delete_file':
+          if (!selectedRepo) {
+            toast.error('Please select a repository first');
+            return;
+          }
+          const [ownerDel, repoDel] = selectedRepo.full_name.split('/');
+          const fileToDelete = await githubAPI.getFileContent(ownerDel, repoDel, action.data.path);
+          await githubAPI.deleteFile(
+            ownerDel,
+            repoDel,
+            action.data.path,
+            action.data.message || `Delete ${action.data.path}`,
+            fileToDelete.sha
+          );
+          
+          setMessages(prev => prev.map((msg, idx) => 
+            idx === messageIndex 
+              ? { ...msg, action: { ...msg.action!, status: 'completed', data: { path: action.data.path } } }
+              : msg
+          ));
+          
+          toast.success(`File "${action.data.path}" deleted!`);
+          break;
+
         default:
           toast.error('Unknown action type');
       }
@@ -430,12 +533,41 @@ IMPORTANT: When you need to perform GitHub actions, use these formats:
 }
 [/CREATE_PROJECT]
 
+6. To create a new branch:
+[CREATE_BRANCH]
+{
+  "branchName": "feature-name",
+  "fromBranch": "main"
+}
+[/CREATE_BRANCH]
+
+7. To create a pull request:
+[CREATE_PR]
+{
+  "title": "PR Title",
+  "body": "PR description",
+  "head": "feature-branch",
+  "base": "main"
+}
+[/CREATE_PR]
+
+8. To delete a file:
+[DELETE_FILE]
+{
+  "path": "path/to/file.txt",
+  "message": "Delete file (optional)"
+}
+[/DELETE_FILE]
+
 Before executing actions, ALWAYS ask the user for required information. For example:
-- For creating a repo: ask for name, description, visibility (public/private), whether to initialize with README
+- For creating a repo: ask for name, description, visibility (public/private)
 - For creating an issue: ask for title and description
 - For updating README: ask for the content
 - For creating a file: ask for file path, content, and commit message
 - For creating a project: ask about project idea, tech stack, features, then generate appropriate files
+- For creating a branch: ask for branch name and base branch
+- For creating a PR: ask for title, description, source and target branches
+- For deleting a file: ask for file path and confirmation
 
 After getting all required info, include the action tag in your response.`;
 
@@ -458,6 +590,9 @@ After getting all required info, include the action tag in your response.`;
         .replace(/\[UPDATE_README\][\s\S]*?\[\/UPDATE_README\]/g, '')
         .replace(/\[CREATE_FILE\][\s\S]*?\[\/CREATE_FILE\]/g, '')
         .replace(/\[CREATE_PROJECT\][\s\S]*?\[\/CREATE_PROJECT\]/g, '')
+        .replace(/\[CREATE_BRANCH\][\s\S]*?\[\/CREATE_BRANCH\]/g, '')
+        .replace(/\[CREATE_PR\][\s\S]*?\[\/CREATE_PR\]/g, '')
+        .replace(/\[DELETE_FILE\][\s\S]*?\[\/DELETE_FILE\]/g, '')
         .trim();
 
       const assistantMessage: Message = {
@@ -568,7 +703,7 @@ After getting all required info, include the action tag in your response.`;
 
           <CardContent className="flex-1 flex flex-col p-0 overflow-hidden">
             {/* Messages */}
-            <ScrollArea className="flex-1 p-4">
+            <div className="flex-1 overflow-y-auto p-4">
               <div className="space-y-4">
                 {messages.map((message, index) => (
                   <div key={index}>
@@ -618,6 +753,9 @@ After getting all required info, include the action tag in your response.`;
                                   {message.action.type === 'update_readme' && 'Updating README...'}
                                   {message.action.type === 'create_file' && 'Creating file...'}
                                   {message.action.type === 'create_project' && 'Creating project...'}
+                                  {message.action.type === 'create_branch' && 'Creating branch...'}
+                                  {message.action.type === 'create_pr' && 'Creating pull request...'}
+                                  {message.action.type === 'delete_file' && 'Deleting file...'}
                                 </span>
                               </div>
                               {message.action.status === 'completed' && message.action.data && (
@@ -627,6 +765,9 @@ After getting all required info, include the action tag in your response.`;
                                   {message.action.type === 'create_file' && `File created successfully`}
                                   {message.action.type === 'update_readme' && `README updated successfully`}
                                   {message.action.type === 'create_project' && `Project created: ${message.action.data.repo.html_url} (${message.action.data.filesCreated} files)`}
+                                  {message.action.type === 'create_branch' && `Branch created successfully`}
+                                  {message.action.type === 'create_pr' && `Pull Request #${message.action.data.number} created`}
+                                  {message.action.type === 'delete_file' && `File deleted: ${message.action.data.path}`}
                                 </p>
                               )}
                             </div>
@@ -655,7 +796,7 @@ After getting all required info, include the action tag in your response.`;
 
                 <div ref={messagesEndRef} />
               </div>
-            </ScrollArea>
+            </div>
 
             {/* Input */}
             <div className="border-t p-4">

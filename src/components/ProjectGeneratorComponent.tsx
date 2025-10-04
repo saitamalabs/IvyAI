@@ -120,6 +120,10 @@ export default function ProjectGeneratorComponent() {
     setProgress(0);
 
     try {
+      // Initialize GitHub API with token
+      const { githubAPI } = await import('@/services/githubAPI');
+      githubAPI.setToken(accessToken);
+
       const repoUrl = await projectGenerator.deployToGitHub(
         generatedFiles,
         projectName,
