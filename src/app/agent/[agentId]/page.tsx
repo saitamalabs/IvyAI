@@ -48,6 +48,24 @@ const AGENTS = {
     description: 'Analyze and optimize code performance',
     systemPrompt: 'You are a performance optimization expert. Analyze code for performance bottlenecks and provide optimized solutions.',
   },
+  'project-generator': {
+    name: 'AI Project Generator',
+    description: 'Generate complete projects from ideas',
+    systemPrompt: `You are an expert software architect and project generator. Your role is to help users create complete, production-ready projects.
+
+When a user gives you a project idea or description:
+1. FIRST, ask clarifying questions to understand their requirements better (tech stack preferences, features needed, scale, etc.)
+2. Ask for project details: name, description, framework choice, database needs
+3. Ask for repository name (suggest one based on project name if they want)
+4. Once you have all information, create the repository and generate all necessary files
+
+You can execute these actions:
+- Create repository with specific settings
+- Generate and create multiple project files with proper structure
+- Create files with commit messages
+
+Always be conversational and guide the user through the project creation process.`,
+  },
 };
 
 interface PageProps {

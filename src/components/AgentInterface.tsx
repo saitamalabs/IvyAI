@@ -75,6 +75,7 @@ export default function AgentInterface({
     }
     if (accessToken) {
       githubAPI.setToken(accessToken);
+      // Load repos for agents that need repository selection
       if (agentId === 'pr-reviewer' || agentId === 'repo-agent') {
         loadRepositories();
       }
@@ -173,6 +174,17 @@ export default function AgentInterface({
       if (match) {
         try {
           return { type: 'create_file', data: JSON.parse(match[1]) };
+        } catch (e) {
+          return null;
+        }
+      }
+    }
+
+    if (response.includes('[CREATE_PROJECT]')) {
+      const match = response.match(/\[CREATE_PROJECT\]([\s\S]*?)\[\/CREATE_PROJECT\]/);
+      if (match) {
+        try {
+          return { type: 'create_project', data: JSON.parse(match[1]) };
         } catch (e) {
           return null;
         }
@@ -278,6 +290,43 @@ export default function AgentInterface({
           toast.success(`File "${action.data.path}" created successfully!`);
           break;
 
+        case 'create_project':
+          // Create repo first
+          toast('Creating repository...', { icon: '🚀' });
+          const newRepo = await githubAPI.createRepository(
+            action.data.repoName,
+            action.data.description,
+            action.data.private || false,
+            false  // Don't auto-init to avoid conflicts
+          );
+          
+          // Then create all files
+          const files = action.data.files || [];
+          for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            toast(`Creating ${file.path}... (${i + 1}/${files.length})`, { icon: '📄' });
+            
+            await githubAPI.createOrUpdateFile(
+              newRepo.owner.login,
+              newRepo.name,
+              file.path,
+              file.content,
+              file.message || `Add ${file.path}`
+            );
+          }
+          
+          result = { repo: newRepo, filesCreated: files.length };
+          
+          setMessages(prev => prev.map((msg, idx) => 
+            idx === messageIndex 
+              ? { ...msg, action: { ...msg.action!, status: 'completed', data: result } }
+              : msg
+          ));
+          
+          toast.success(`Project created with ${files.length} files!`);
+          await loadRepositories();
+          break;
+
         default:
           toast.error('Unknown action type');
       }
@@ -310,13 +359,15 @@ export default function AgentInterface({
         throw new Error('AIML API key not configured');
       }
 
-      // Build context
+      // Build context (only for agents that use repositories)
       let context = '';
-      if (selectedRepo) {
-        context += `Current Repository: ${selectedRepo.full_name}\n`;
-      }
-      if (selectedPR) {
-        context += `Current PR: #${selectedPR.number} - ${selectedPR.title}\n`;
+      if (agentId === 'pr-reviewer' || agentId === 'repo-agent') {
+        if (selectedRepo) {
+          context += `Current Repository: ${selectedRepo.full_name}\n`;
+        }
+        if (selectedPR) {
+          context += `Current PR: #${selectedPR.number} - ${selectedPR.title}\n`;
+        }
       }
 
       // Enhanced system prompt for actions
@@ -358,11 +409,33 @@ IMPORTANT: When you need to perform GitHub actions, use these formats:
 }
 [/CREATE_FILE]
 
+5. To create a complete project (repository + multiple files):
+[CREATE_PROJECT]
+{
+  "repoName": "project-name",
+  "description": "Project description",
+  "private": false,
+  "files": [
+    {
+      "path": "README.md",
+      "content": "# Project Title",
+      "message": "Add README"
+    },
+    {
+      "path": "src/index.js",
+      "content": "console.log('Hello');",
+      "message": "Add main file"
+    }
+  ]
+}
+[/CREATE_PROJECT]
+
 Before executing actions, ALWAYS ask the user for required information. For example:
 - For creating a repo: ask for name, description, visibility (public/private), whether to initialize with README
 - For creating an issue: ask for title and description
 - For updating README: ask for the content
 - For creating a file: ask for file path, content, and commit message
+- For creating a project: ask about project idea, tech stack, features, then generate appropriate files
 
 After getting all required info, include the action tag in your response.`;
 
@@ -384,6 +457,7 @@ After getting all required info, include the action tag in your response.`;
         .replace(/\[CREATE_ISSUE\][\s\S]*?\[\/CREATE_ISSUE\]/g, '')
         .replace(/\[UPDATE_README\][\s\S]*?\[\/UPDATE_README\]/g, '')
         .replace(/\[CREATE_FILE\][\s\S]*?\[\/CREATE_FILE\]/g, '')
+        .replace(/\[CREATE_PROJECT\][\s\S]*?\[\/CREATE_PROJECT\]/g, '')
         .trim();
 
       const assistantMessage: Message = {
@@ -543,6 +617,7 @@ After getting all required info, include the action tag in your response.`;
                                   {message.action.type === 'create_issue' && 'Creating issue...'}
                                   {message.action.type === 'update_readme' && 'Updating README...'}
                                   {message.action.type === 'create_file' && 'Creating file...'}
+                                  {message.action.type === 'create_project' && 'Creating project...'}
                                 </span>
                               </div>
                               {message.action.status === 'completed' && message.action.data && (
@@ -551,6 +626,7 @@ After getting all required info, include the action tag in your response.`;
                                   {message.action.type === 'create_issue' && `Issue #${message.action.data.number} created`}
                                   {message.action.type === 'create_file' && `File created successfully`}
                                   {message.action.type === 'update_readme' && `README updated successfully`}
+                                  {message.action.type === 'create_project' && `Project created: ${message.action.data.repo.html_url} (${message.action.data.filesCreated} files)`}
                                 </p>
                               )}
                             </div>

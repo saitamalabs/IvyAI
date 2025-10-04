@@ -455,15 +455,34 @@ Include:
       for (let i = 0; i < files.length; i += batchSize) {
         const batch = files.slice(i, i + batchSize);
         await Promise.all(
-          batch.map((file) =>
-            githubAPI.createOrUpdateFile(
-              repo.owner.login,
-              repo.name,
-              file.path,
-              file.content,
-              `Add ${file.path}`
-            )
-          )
+          batch.map(async (file) => {
+            // Check if file exists (especially README.md from auto_init)
+            try {
+              const existingFile = await githubAPI.getFileContent(
+                repo.owner.login,
+                repo.name,
+                file.path
+              ).catch(() => null);
+              
+              return githubAPI.createOrUpdateFile(
+                repo.owner.login,
+                repo.name,
+                file.path,
+                file.content,
+                `Add ${file.path}`,
+                existingFile?.sha
+              );
+            } catch (err) {
+              // If file doesn't exist, create it without SHA
+              return githubAPI.createOrUpdateFile(
+                repo.owner.login,
+                repo.name,
+                file.path,
+                file.content,
+                `Add ${file.path}`
+              );
+            }
+          })
         );
 
         const progress = 30 + ((i + batch.length) / files.length) * 60;

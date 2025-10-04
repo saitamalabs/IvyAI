@@ -101,6 +101,15 @@ const FEATURES: Feature[] = [
     color: 'text-orange-600',
     bgColor: 'bg-orange-100 dark:bg-orange-900/20',
     category: 'Optimization'
+  },
+  {
+    id: 'project-generator',
+    name: 'AI Project Generator',
+    description: 'Generate complete projects from ideas with AI guidance',
+    icon: Rocket,
+    color: 'text-cyan-600',
+    bgColor: 'bg-cyan-100 dark:bg-cyan-900/20',
+    category: 'Generation'
   }
 ];
 
