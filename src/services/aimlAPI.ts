@@ -35,7 +35,7 @@ export interface CodeAnalysisResult {
 
 export const MODEL_CONFIGS: Record<AIModel, AIModelConfig | null> = {
   claude: {
-    id: 'anthropic/claude-3.5-sonnet',
+    id: 'claude-3-5-sonnet-latest',
     name: 'Claude 3.5 Sonnet',
     description: 'Best for complex reasoning, architecture analysis, and refactoring',
     maxTokens: 8192,
@@ -43,7 +43,7 @@ export const MODEL_CONFIGS: Record<AIModel, AIModelConfig | null> = {
     bestFor: ['architecture', 'refactoring', 'documentation', 'code-review'],
   },
   gemini: {
-    id: 'google/gemini-2.0-flash-exp',
+    id: 'gemini-2.0-flash-exp',
     name: 'Gemini 2.0 Flash',
     description: 'Fastest model for code generation and quick snippets',
     maxTokens: 8192,
@@ -51,7 +51,7 @@ export const MODEL_CONFIGS: Record<AIModel, AIModelConfig | null> = {
     bestFor: ['code-generation', 'autocomplete', 'boilerplate'],
   },
   gpt4: {
-    id: 'openai/gpt-4o',
+    id: 'gpt-4o',
     name: 'GPT-4o',
     description: 'Balanced model for testing, bug fixes, and general tasks',
     maxTokens: 4096,
