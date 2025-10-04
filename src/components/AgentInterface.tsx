@@ -62,6 +62,11 @@ export default function AgentInterface({
   const [selectedPR, setSelectedPR] = useState<PullRequest | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  // Auto-scroll to bottom when messages change
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
   // Initialize
   useEffect(() => {
     const apiKey = process.env.NEXT_PUBLIC_AIMLAPI_KEY;
@@ -163,6 +168,17 @@ export default function AgentInterface({
       }
     }
 
+    if (response.includes('[CREATE_FILE]')) {
+      const match = response.match(/\[CREATE_FILE\]([\s\S]*?)\[\/CREATE_FILE\]/);
+      if (match) {
+        try {
+          return { type: 'create_file', data: JSON.parse(match[1]) };
+        } catch (e) {
+          return null;
+        }
+      }
+    }
+
     return null;
   };
 
@@ -218,8 +234,48 @@ export default function AgentInterface({
             return;
           }
           const [ownerReadme, repoReadme] = selectedRepo.full_name.split('/');
-          // GitHub API call to update README would go here
-          toast.success('README updated successfully!');
+          try {
+            const existingFile = await githubAPI.getFileContent(ownerReadme, repoReadme, 'README.md').catch(() => null);
+            result = await githubAPI.createOrUpdateFile(
+              ownerReadme,
+              repoReadme,
+              'README.md',
+              action.data.content,
+              'Update README.md',
+              existingFile?.sha
+            );
+            setMessages(prev => prev.map((msg, idx) => 
+              idx === messageIndex 
+                ? { ...msg, action: { ...msg.action!, status: 'completed', data: result } }
+                : msg
+            ));
+            toast.success('README updated successfully!');
+          } catch (err: any) {
+            throw err;
+          }
+          break;
+
+        case 'create_file':
+          if (!selectedRepo) {
+            toast.error('Please select a repository first');
+            return;
+          }
+          const [ownerFile, repoFile] = selectedRepo.full_name.split('/');
+          result = await githubAPI.createOrUpdateFile(
+            ownerFile,
+            repoFile,
+            action.data.path,
+            action.data.content,
+            action.data.message || `Create ${action.data.path}`
+          );
+          
+          setMessages(prev => prev.map((msg, idx) => 
+            idx === messageIndex 
+              ? { ...msg, action: { ...msg.action!, status: 'completed', data: result } }
+              : msg
+          ));
+          
+          toast.success(`File "${action.data.path}" created successfully!`);
           break;
 
         default:
@@ -293,10 +349,20 @@ IMPORTANT: When you need to perform GitHub actions, use these formats:
 }
 [/UPDATE_README]
 
+4. To create a file in the selected repository:
+[CREATE_FILE]
+{
+  "path": "path/to/file.txt",
+  "content": "File content here",
+  "message": "Commit message (optional)"
+}
+[/CREATE_FILE]
+
 Before executing actions, ALWAYS ask the user for required information. For example:
 - For creating a repo: ask for name, description, visibility (public/private), whether to initialize with README
 - For creating an issue: ask for title and description
 - For updating README: ask for the content
+- For creating a file: ask for file path, content, and commit message
 
 After getting all required info, include the action tag in your response.`;
 
@@ -317,6 +383,7 @@ After getting all required info, include the action tag in your response.`;
         .replace(/\[CREATE_REPO\][\s\S]*?\[\/CREATE_REPO\]/g, '')
         .replace(/\[CREATE_ISSUE\][\s\S]*?\[\/CREATE_ISSUE\]/g, '')
         .replace(/\[UPDATE_README\][\s\S]*?\[\/UPDATE_README\]/g, '')
+        .replace(/\[CREATE_FILE\][\s\S]*?\[\/CREATE_FILE\]/g, '')
         .trim();
 
       const assistantMessage: Message = {
@@ -475,12 +542,15 @@ After getting all required info, include the action tag in your response.`;
                                   {message.action.type === 'create_repo' && 'Creating repository...'}
                                   {message.action.type === 'create_issue' && 'Creating issue...'}
                                   {message.action.type === 'update_readme' && 'Updating README...'}
+                                  {message.action.type === 'create_file' && 'Creating file...'}
                                 </span>
                               </div>
                               {message.action.status === 'completed' && message.action.data && (
                                 <p className="text-xs mt-1 text-muted-foreground">
                                   {message.action.type === 'create_repo' && `Repository created: ${message.action.data.html_url}`}
                                   {message.action.type === 'create_issue' && `Issue #${message.action.data.number} created`}
+                                  {message.action.type === 'create_file' && `File created successfully`}
+                                  {message.action.type === 'update_readme' && `README updated successfully`}
                                 </p>
                               )}
                             </div>
