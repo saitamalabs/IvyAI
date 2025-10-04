@@ -2,9 +2,11 @@
 
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
 import Header from './Header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
 import { 
   Code2, 
   GitPullRequest, 
@@ -113,9 +115,41 @@ const FEATURES: Feature[] = [
   }
 ];
 
+// Skeleton Loading Component
+function AgentCardSkeleton() {
+  return (
+    <Card className="border-2">
+      <CardHeader className="pb-3">
+        <Skeleton className="w-16 h-16 rounded-2xl mb-4" />
+        <Skeleton className="h-5 w-24 mb-2" />
+        <Skeleton className="h-6 w-3/4" />
+      </CardHeader>
+      <CardContent>
+        <Skeleton className="h-4 w-full mb-2" />
+        <Skeleton className="h-4 w-5/6 mb-4" />
+        <div className="mt-4 flex items-center gap-2">
+          <Skeleton className="h-4 w-4 rounded-full" />
+          <Skeleton className="h-4 w-24" />
+          <Skeleton className="h-4 w-4 rounded-full ml-auto" />
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 export default function Dashboard() {
   const { user } = useAuth();
   const router = useRouter();
+  const [loading, setLoading] = useState(true);
+
+  // Simulate loading state (remove this when integrating with real data fetching)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1000); // 1 second loading simulation
+
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -134,36 +168,44 @@ export default function Dashboard() {
 
         {/* Features Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {FEATURES.map((feature) => {
-            const Icon = feature.icon;
-            return (
-              <Card 
-                key={feature.id}
-                className="group hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 cursor-pointer border-2 hover:border-blue-500"
-                onClick={() => router.push(`/agent/${feature.id}`)}
-              >
-                <CardHeader className="pb-3">
-                  <div className={`w-16 h-16 rounded-2xl ${feature.bgColor} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
-                    <Icon className={`w-8 h-8 ${feature.color}`} />
-                  </div>
-                  <Badge variant="outline" className="w-fit mb-2 text-xs">
-                    {feature.category}
-                  </Badge>
-                  <CardTitle className="text-lg">{feature.name}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription className="text-sm leading-relaxed">
-                    {feature.description}
-                  </CardDescription>
-                  <div className="mt-4 flex items-center gap-2 text-blue-600 dark:text-blue-400 text-sm font-medium">
-                    <MessageSquare className="w-4 h-4" />
-                    <span>Open Agent</span>
-                    <ArrowRight className="w-4 h-4 ml-auto" />
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })}
+          {loading ? (
+            // Show skeleton loaders while loading
+            Array.from({ length: 9 }).map((_, index) => (
+              <AgentCardSkeleton key={`skeleton-${index}`} />
+            ))
+          ) : (
+            // Show actual agent cards when loaded
+            FEATURES.map((feature) => {
+              const Icon = feature.icon;
+              return (
+                <Card 
+                  key={feature.id}
+                  className="group hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 cursor-pointer border-2 hover:border-blue-500"
+                  onClick={() => router.push(`/agent/${feature.id}`)}
+                >
+                  <CardHeader className="pb-3">
+                    <div className={`w-16 h-16 rounded-2xl ${feature.bgColor} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
+                      <Icon className={`w-8 h-8 ${feature.color}`} />
+                    </div>
+                    <Badge variant="outline" className="w-fit mb-2 text-xs">
+                      {feature.category}
+                    </Badge>
+                    <CardTitle className="text-lg">{feature.name}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <CardDescription className="text-sm leading-relaxed">
+                      {feature.description}
+                    </CardDescription>
+                    <div className="mt-4 flex items-center gap-2 text-blue-600 dark:text-blue-400 text-sm font-medium">
+                      <MessageSquare className="w-4 h-4" />
+                      <span>Open Agent</span>
+                      <ArrowRight className="w-4 h-4 ml-auto" />
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })
+          )}
         </div>
       </main>
     </div>
