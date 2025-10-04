@@ -1,18 +1,8 @@
-// AIML API Service - Multi-Model AI Integration
-// Supports Claude 3.5 Sonnet, Gemini 2.0 Flash, and GPT-4o
+// AIML API Service - OpenAI GPT-4o Integration
+// Simple wrapper using AIML API as proxy to OpenAI
+// Example: https://api.aimlapi.com/v1
 
 import OpenAI from 'openai';
-
-export type AIModel = 'claude' | 'gemini' | 'gpt4' | 'auto';
-
-export interface AIModelConfig {
-  id: string;
-  name: string;
-  description: string;
-  maxTokens: number;
-  temperature: number;
-  bestFor: string[];
-}
 
 export interface AIMessage {
   role: 'system' | 'user' | 'assistant';
@@ -33,108 +23,45 @@ export interface CodeAnalysisResult {
   suggestions: string[];
 }
 
-export const MODEL_CONFIGS: Record<AIModel, AIModelConfig | null> = {
-  claude: {
-    id: 'claude-3-5-sonnet-latest',
-    name: 'Claude 3.5 Sonnet',
-    description: 'Best for complex reasoning, architecture analysis, and refactoring',
-    maxTokens: 8192,
-    temperature: 0.7,
-    bestFor: ['architecture', 'refactoring', 'documentation', 'code-review'],
-  },
-  gemini: {
-    id: 'gemini-2.0-flash-exp',
-    name: 'Gemini 2.0 Flash',
-    description: 'Fastest model for code generation and quick snippets',
-    maxTokens: 8192,
-    temperature: 0.8,
-    bestFor: ['code-generation', 'autocomplete', 'boilerplate'],
-  },
-  gpt4: {
-    id: 'gpt-4o',
-    name: 'GPT-4o',
-    description: 'Balanced model for testing, bug fixes, and general tasks',
-    maxTokens: 4096,
-    temperature: 0.7,
-    bestFor: ['testing', 'bug-fixing', 'general'],
-  },
-  auto: null,
-};
-
 class AIMLAPI {
   private client: OpenAI | null = null;
   private readonly baseURL = 'https://api.aimlapi.com/v1';
+  private readonly model = 'gpt-4o';
 
+  /**
+   * Initialize the OpenAI client with AIML API
+   * Example:
+   * client = OpenAI(
+   *   base_url="https://api.aimlapi.com/v1",
+   *   api_key="<YOUR_AIMLAPI_KEY>",    
+   * )
+   */
   setApiKey(apiKey: string) {
     this.client = new OpenAI({
       apiKey,
       baseURL: this.baseURL,
-      dangerouslyAllowBrowser: true, // For frontend usage
+      dangerouslyAllowBrowser: true,
     });
   }
 
   /**
-   * Automatically select the best model for a given task type
+   * Make a chat completion request
+   * Simple wrapper for client.chat.completions.create()
    */
-  private selectModelForTask(taskType: string): AIModel {
-    const taskLower = taskType.toLowerCase();
-
-    if (taskLower.includes('refactor') || taskLower.includes('architecture') || 
-        taskLower.includes('review') || taskLower.includes('documentation')) {
-      return 'claude';
-    }
-
-    if (taskLower.includes('generate') || taskLower.includes('create') || 
-        taskLower.includes('boilerplate') || taskLower.includes('quick')) {
-      return 'gemini';
-    }
-
-    if (taskLower.includes('test') || taskLower.includes('bug') || 
-        taskLower.includes('fix') || taskLower.includes('debug')) {
-      return 'gpt4';
-    }
-
-    // Default to Gemini for general tasks
-    return 'gemini';
-  }
-
-  /**
-   * Get model configuration for a specific model
-   */
-  getModelConfig(model: AIModel): AIModelConfig {
-    if (model === 'auto') {
-      return MODEL_CONFIGS.gemini!;
-    }
-    return MODEL_CONFIGS[model]!;
-  }
-
-  /**
-   * Make a chat completion request to the AI
-   */
-  async chat(
-    messages: AIMessage[],
-    model: AIModel = 'auto',
-    taskType: string = 'general'
-  ): Promise<string> {
+  async chat(messages: AIMessage[]): Promise<string> {
     if (!this.client) {
       throw new Error('AIML API client not initialized. Call setApiKey first.');
     }
 
-    const selectedModel = model === 'auto' ? this.selectModelForTask(taskType) : model;
-    const config = this.getModelConfig(selectedModel);
-
-    console.log(`[AIML API] Using model: ${config.name} for task: ${taskType}`);
+    console.log(`[AIML API] Using model: ${this.model}`);
 
     try {
       const response = await this.client.chat.completions.create({
-        model: config.id,
+        model: this.model,
         messages: messages as any,
-        max_tokens: config.maxTokens,
-        temperature: config.temperature,
       });
 
-      const content = response.choices[0]?.message?.content || '';
-      return content;
+      return response.choices[0]?.message?.content || '';
     } catch (error: any) {
       console.error('[AIML API] Error:', error);
       throw new Error(`AI request failed: ${error.message}`);
@@ -144,43 +71,28 @@ class AIMLAPI {
   /**
    * Stream chat completion
    */
-  async *chatStream(
-    messages: AIMessage[],
-    model: AIModel = 'auto',
-    taskType: string = 'general'
-  ): AsyncGenerator<AIStreamChunk> {
+  async *chatStream(messages: AIMessage[]): AsyncGenerator<AIStreamChunk> {
     if (!this.client) {
       throw new Error('AIML API client not initialized. Call setApiKey first.');
     }
 
-    const selectedModel = model === 'auto' ? this.selectModelForTask(taskType) : model;
-    const config = this.getModelConfig(selectedModel);
-
-    console.log(`[AIML API] Streaming with model: ${config.name}`);
+    console.log(`[AIML API] Streaming with model: ${this.model}`);
 
     try {
       const stream = await this.client.chat.completions.create({
-        model: config.id,
+        model: this.model,
         messages: messages as any,
-        max_tokens: config.maxTokens,
-        temperature: config.temperature,
         stream: true,
       });
 
       for await (const chunk of stream) {
         const content = chunk.choices[0]?.delta?.content || '';
         if (content) {
-          yield {
-            text: content,
-            done: false,
-          };
+          yield { text: content, done: false };
         }
       }
 
-      yield {
-        text: '',
-        done: true,
-      };
+      yield { text: '', done: true };
     } catch (error: any) {
       console.error('[AIML API] Stream error:', error);
       throw new Error(`AI stream failed: ${error.message}`);
@@ -201,12 +113,10 @@ class AIMLAPI {
       ? `Context:\n${context}\n\nTask: ${description}\n\nGenerate the code:`
       : `Generate ${language} code for: ${description}`;
 
-    const messages: AIMessage[] = [
+    return this.chat([
       { role: 'system', content: systemPrompt },
       { role: 'user', content: userPrompt },
-    ];
-
-    return this.chat(messages, 'gemini', 'code-generation');
+    ]);
   }
 
   /**
@@ -223,28 +133,22 @@ class AIMLAPI {
       ? `Refactor this ${language} code following these instructions: ${instructions}\n\n\`\`\`${language}\n${code}\n\`\`\`\n\nProvide the refactored code:`
       : `Refactor this ${language} code to improve quality and follow best practices:\n\n\`\`\`${language}\n${code}\n\`\`\`\n\nProvide the refactored code:`;
 
-    const messages: AIMessage[] = [
+    return this.chat([
       { role: 'system', content: systemPrompt },
       { role: 'user', content: userPrompt },
-    ];
-
-    return this.chat(messages, 'claude', 'refactor');
+    ]);
   }
 
   /**
    * Analyze code for bugs, security issues, and improvements
    */
-  async analyzeCode(
-    code: string,
-    language: string
-  ): Promise<CodeAnalysisResult> {
+  async analyzeCode(code: string, language: string): Promise<CodeAnalysisResult> {
     const systemPrompt = `You are a code analysis expert. Analyze code for bugs, security vulnerabilities, performance issues, and best practice violations.`;
     
     const userPrompt = `Analyze this ${language} code comprehensively:\n\n\`\`\`${language}\n${code}\n\`\`\`\n\nProvide your analysis in this exact format:
 SCORE: [1-10]
 BUGS:
 - [bug 1]
-- [bug 2]
 or BUGS: None
 
 SECURITY:
@@ -257,18 +161,16 @@ or PERFORMANCE: None
 
 BEST_PRACTICES:
 - [best practice 1]
-- [best practice 2]
 
 SUGGESTIONS:
 - [suggestion 1]
 or SUGGESTIONS: None`;
 
-    const messages: AIMessage[] = [
+    const response = await this.chat([
       { role: 'system', content: systemPrompt },
       { role: 'user', content: userPrompt },
-    ];
-
-    const response = await this.chat(messages, 'claude', 'code-review');
+    ]);
+    
     return this.parseCodeAnalysis(response);
   }
 
@@ -291,12 +193,10 @@ or SUGGESTIONS: None`;
 
 Provide only the test code:`;
 
-    const messages: AIMessage[] = [
+    return this.chat([
       { role: 'system', content: systemPrompt },
       { role: 'user', content: userPrompt },
-    ];
-
-    return this.chat(messages, 'gpt4', 'testing');
+    ]);
   }
 
   /**
@@ -319,12 +219,10 @@ Provide only the test code:`;
       userPrompt += 'Create API documentation with endpoints, parameters, responses, and examples.';
     }
 
-    const messages: AIMessage[] = [
+    return this.chat([
       { role: 'system', content: systemPrompt },
       { role: 'user', content: userPrompt },
-    ];
-
-    return this.chat(messages, 'claude', 'documentation');
+    ]);
   }
 
   /**
@@ -341,12 +239,10 @@ Provide only the test code:`;
       ? `Fix the following bug in this ${language} code:\nBug: ${bugDescription}\n\n\`\`\`${language}\n${code}\n\`\`\`\n\nProvide the fixed code:`
       : `Identify and fix any bugs in this ${language} code:\n\n\`\`\`${language}\n${code}\n\`\`\`\n\nProvide the fixed code:`;
 
-    const messages: AIMessage[] = [
+    return this.chat([
       { role: 'system', content: systemPrompt },
       { role: 'user', content: userPrompt },
-    ];
-
-    return this.chat(messages, 'gpt4', 'bug-fixing');
+    ]);
   }
 
   /**
@@ -361,12 +257,10 @@ Provide only the test code:`;
 3. Key concepts used
 4. Potential improvements`;
 
-    const messages: AIMessage[] = [
+    return this.chat([
       { role: 'system', content: systemPrompt },
       { role: 'user', content: userPrompt },
-    ];
-
-    return this.chat(messages, 'claude', 'explanation');
+    ]);
   }
 
   /**
@@ -381,12 +275,10 @@ Provide only the test code:`;
     
     const userPrompt = `Convert this ${fromLanguage} code to ${toLanguage}:\n\n\`\`\`${fromLanguage}\n${code}\n\`\`\`\n\nProvide idiomatic ${toLanguage} code:`;
 
-    const messages: AIMessage[] = [
+    return this.chat([
       { role: 'system', content: systemPrompt },
       { role: 'user', content: userPrompt },
-    ];
-
-    return this.chat(messages, 'gemini', 'code-generation');
+    ]);
   }
 
   /**

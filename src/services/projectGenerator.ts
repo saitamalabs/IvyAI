@@ -136,11 +136,10 @@ Provide:
 3. Data flow
 4. Best practices for this stack`;
 
-    return await aimlAPI.chat(
-      [{ role: 'user', content: prompt }],
-      'claude',
-      'architecture'
-    );
+    return await aimlAPI.chat([
+      { role: 'system', content: 'You are an expert software architect.' },
+      { role: 'user', content: prompt }
+    ]);
   }
 
   /**

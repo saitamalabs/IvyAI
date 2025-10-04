@@ -1,73 +1,113 @@
 "use client";
 
-import { useEffect, useState, useCallback } from 'react';
+import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { githubAPI, Repository, PullRequest } from '@/services/githubAPI';
 import Header from './Header';
-import PRCard from './PRCard';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, AlertCircle, FolderGit2, Sparkles, Rocket, Code, GitBranch, Star, GitFork, ArrowRight } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { 
+  Code2, 
+  GitPullRequest, 
+  Bot, 
+  FileCode, 
+  Sparkles, 
+  Rocket,
+  TestTube2,
+  Shield,
+  Zap,
+  MessageSquare,
+  X
+} from 'lucide-react';
+import FeatureChatInterface from './FeatureChatInterface';
+
+interface Feature {
+  id: string;
+  name: string;
+  description: string;
+  icon: any;
+  color: string;
+  bgColor: string;
+  category: string;
+}
+
+const FEATURES: Feature[] = [
+  {
+    id: 'pr-reviewer',
+    name: 'PR Reviewer',
+    description: 'AI-powered pull request reviews with intelligent suggestions',
+    icon: GitPullRequest,
+    color: 'text-blue-600',
+    bgColor: 'bg-blue-100 dark:bg-blue-900/20',
+    category: 'Code Review'
+  },
+  {
+    id: 'repo-agent',
+    name: 'GitHub Repo Agent',
+    description: 'Intelligent assistant for repository management and analysis',
+    icon: Bot,
+    color: 'text-purple-600',
+    bgColor: 'bg-purple-100 dark:bg-purple-900/20',
+    category: 'Repository'
+  },
+  {
+    id: 'code-generator',
+    name: 'Code Generator',
+    description: 'Generate production-ready code from natural language descriptions',
+    icon: Code2,
+    color: 'text-green-600',
+    bgColor: 'bg-green-100 dark:bg-green-900/20',
+    category: 'Generation'
+  },
+  {
+    id: 'code-refactor',
+    name: 'Code Refactor',
+    description: 'Improve code quality with AI-powered refactoring suggestions',
+    icon: Sparkles,
+    color: 'text-yellow-600',
+    bgColor: 'bg-yellow-100 dark:bg-yellow-900/20',
+    category: 'Optimization'
+  },
+  {
+    id: 'test-generator',
+    name: 'Test Generator',
+    description: 'Automatically generate comprehensive unit tests for your code',
+    icon: TestTube2,
+    color: 'text-pink-600',
+    bgColor: 'bg-pink-100 dark:bg-pink-900/20',
+    category: 'Testing'
+  },
+  {
+    id: 'security-scanner',
+    name: 'Security Scanner',
+    description: 'Detect security vulnerabilities and get fix recommendations',
+    icon: Shield,
+    color: 'text-red-600',
+    bgColor: 'bg-red-100 dark:bg-red-900/20',
+    category: 'Security'
+  },
+  {
+    id: 'doc-generator',
+    name: 'Documentation Generator',
+    description: 'Create comprehensive documentation from your codebase',
+    icon: FileCode,
+    color: 'text-indigo-600',
+    bgColor: 'bg-indigo-100 dark:bg-indigo-900/20',
+    category: 'Documentation'
+  },
+  {
+    id: 'performance-optimizer',
+    name: 'Performance Optimizer',
+    description: 'Analyze and optimize code performance automatically',
+    icon: Zap,
+    color: 'text-orange-600',
+    bgColor: 'bg-orange-100 dark:bg-orange-900/20',
+    category: 'Optimization'
+  }
+];
 
 export default function Dashboard() {
-  const { user, accessToken } = useAuth();
-  const router = useRouter();
-  const [repositories, setRepositories] = useState<Repository[]>([]);
-  const [selectedRepo, setSelectedRepo] = useState<Repository | null>(null);
-  const [pullRequests, setPullRequests] = useState<PullRequest[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const loadRepositories = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const repos = await githubAPI.getUserRepositories();
-      setRepositories(repos);
-    } catch (err) {
-      setError('Failed to load repositories. Please try again.');
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (accessToken) {
-      githubAPI.setToken(accessToken);
-      loadRepositories();
-    }
-  }, [accessToken, loadRepositories]);
-
-  const handleRepoChange = async (repoFullName: string) => {
-    const repo = repositories.find(r => r.full_name === repoFullName);
-    if (!repo) return;
-
-    setSelectedRepo(repo);
-    setLoading(true);
-    setError(null);
-    try {
-      const [owner, repoName] = repo.full_name.split('/');
-      const prs = await githubAPI.getPullRequests(owner, repoName);
-      setPullRequests(prs);
-    } catch (err) {
-      setError('Failed to load pull requests. Please try again.');
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleReviewPR = (pr: PullRequest) => {
-    if (selectedRepo) {
-      const [owner, repoName] = selectedRepo.full_name.split('/');
-      router.push(`/review?owner=${owner}&repo=${repoName}&pr=${pr.number}`);
-    }
-  };
+  const { user } = useAuth();
+  const [selectedFeature, setSelectedFeature] = useState<Feature | null>(null);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -80,219 +120,51 @@ export default function Dashboard() {
             Welcome back, {user?.name || user?.login}!
           </h2>
           <p className="text-gray-600 dark:text-gray-400">
-            Your AI-powered coding workspace
+            Choose a feature below to get started with AI-powered development
           </p>
         </div>
 
-        {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer border-blue-200 dark:border-blue-800">
-            <Link href="/playground">
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <Sparkles className="w-8 h-8 text-blue-600" />
-                  <ArrowRight className="w-5 h-5 text-gray-400" />
-                </div>
-                <CardTitle className="text-lg">AI Playground</CardTitle>
-                <CardDescription className="text-sm">
-                  Interactive coding with multi-model AI
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-xs text-muted-foreground">
-                  Generate, refactor, and analyze code
-                </div>
-              </CardContent>
-            </Link>
-          </Card>
-
-          <Card className="hover:shadow-lg transition-shadow cursor-pointer border-purple-200 dark:border-purple-800">
-            <Link href="/projects">
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <Rocket className="w-8 h-8 text-purple-600" />
-                  <ArrowRight className="w-5 h-5 text-gray-400" />
-                </div>
-                <CardTitle className="text-lg">Project Generator</CardTitle>
-                <CardDescription className="text-sm">
-                  Create full-stack projects with AI
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-xs text-muted-foreground">
-                  Autonomous project scaffolding
-                </div>
-              </CardContent>
-            </Link>
-          </Card>
-
-          <Card className="hover:shadow-lg transition-shadow border-green-200 dark:border-green-800">
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <Code className="w-8 h-8 text-green-600" />
-                <Badge variant="secondary">Active</Badge>
-              </div>
-              <CardTitle className="text-lg">PR Reviewer</CardTitle>
-              <CardDescription className="text-sm">
-                AI-powered code reviews
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-xs text-muted-foreground">
-                Select a repository below to review PRs
-              </div>
-            </CardContent>
-          </Card>
+        {/* Features Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {FEATURES.map((feature) => {
+            const Icon = feature.icon;
+            return (
+              <Card 
+                key={feature.id}
+                className="group hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 cursor-pointer border-2 hover:border-blue-500"
+                onClick={() => setSelectedFeature(feature)}
+              >
+                <CardHeader className="pb-3">
+                  <div className={`w-16 h-16 rounded-2xl ${feature.bgColor} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
+                    <Icon className={`w-8 h-8 ${feature.color}`} />
+                  </div>
+                  <Badge variant="outline" className="w-fit mb-2 text-xs">
+                    {feature.category}
+                  </Badge>
+                  <CardTitle className="text-lg">{feature.name}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription className="text-sm leading-relaxed">
+                    {feature.description}
+                  </CardDescription>
+                  <div className="mt-4 flex items-center gap-2 text-blue-600 dark:text-blue-400 text-sm font-medium">
+                    <MessageSquare className="w-4 h-4" />
+                    <span>Open Chat</span>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
-
-        {/* Stats Overview */}
-        {user && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <Card>
-              <CardContent className="pt-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Repositories</p>
-                    <p className="text-2xl font-bold">{repositories.length}</p>
-                  </div>
-                  <FolderGit2 className="w-8 h-8 text-blue-600 opacity-20" />
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="pt-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Public Repos</p>
-                    <p className="text-2xl font-bold">{user.public_repos}</p>
-                  </div>
-                  <GitBranch className="w-8 h-8 text-green-600 opacity-20" />
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="pt-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Followers</p>
-                    <p className="text-2xl font-bold">{user.followers}</p>
-                  </div>
-                  <Star className="w-8 h-8 text-yellow-600 opacity-20" />
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="pt-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Following</p>
-                    <p className="text-2xl font-bold">{user.following}</p>
-                  </div>
-                  <GitFork className="w-8 h-8 text-purple-600 opacity-20" />
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
-
-        {/* Repository Selector */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle>Select Repository</CardTitle>
-            <CardDescription>
-              Choose a repository to view its pull requests
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Select onValueChange={handleRepoChange}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select a repository" />
-              </SelectTrigger>
-              <SelectContent>
-                {repositories.map((repo) => (
-                  <SelectItem key={repo.id} value={repo.full_name}>
-                    <div className="flex items-center gap-2">
-                      <FolderGit2 className="w-4 h-4" />
-                      <span>{repo.full_name}</span>
-                      {repo.private && (
-                        <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded">
-                          Private
-                        </span>
-                      )}
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </CardContent>
-        </Card>
-
-        {/* Error Display */}
-        {error && (
-          <Card className="mb-8 border-red-200 bg-red-50 dark:bg-red-900/20">
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-2 text-red-600 dark:text-red-400">
-                <AlertCircle className="w-5 h-5" />
-                <p>{error}</p>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Loading State */}
-        {loading && (
-          <div className="flex justify-center items-center py-12">
-            <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-          </div>
-        )}
-
-        {/* Pull Requests List */}
-        {!loading && selectedRepo && pullRequests.length > 0 && (
-          <div>
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-              Pull Requests ({pullRequests.length})
-            </h3>
-            <div className="space-y-4">
-              {pullRequests.map((pr) => (
-                <PRCard key={pr.id} pr={pr} onReview={() => handleReviewPR(pr)} />
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Empty State */}
-        {!loading && selectedRepo && pullRequests.length === 0 && (
-          <Card>
-            <CardContent className="py-12 text-center">
-              <FolderGit2 className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                No Pull Requests Found
-              </h3>
-              <p className="text-gray-600 dark:text-gray-400">
-                This repository doesn't have any pull requests yet.
-              </p>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Initial State */}
-        {!loading && !selectedRepo && repositories.length > 0 && (
-          <Card>
-            <CardContent className="py-12 text-center">
-              <FolderGit2 className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                Select a Repository
-              </h3>
-              <p className="text-gray-600 dark:text-gray-400">
-                Choose a repository from the dropdown above to view its pull requests
-              </p>
-            </CardContent>
-          </Card>
-        )}
       </main>
+
+      {/* Feature Chat Interface Modal */}
+      {selectedFeature && (
+        <FeatureChatInterface 
+          feature={selectedFeature}
+          onClose={() => setSelectedFeature(null)}
+        />
+      )}
     </div>
   );
 }

@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Editor from '@monaco-editor/react';
-import { aimlAPI, AIModel, MODEL_CONFIGS } from '@/services/aimlAPI';
+import { aimlAPI } from '@/services/aimlAPI';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -77,7 +77,7 @@ export default function AIPlayground() {
   const { theme } = useTheme();
   const [code, setCode] = useState(TEMPLATES.react.code);
   const [language, setLanguage] = useState<string>('typescript');
-  const [model, setModel] = useState<AIModel>('auto');
+  // Using GPT-4o via AIML API
   const [prompt, setPrompt] = useState('');
   const [chatHistory, setChatHistory] = useState<{ role: string; content: string }[]>([]);
   const [outputCode, setOutputCode] = useState('');
@@ -159,14 +159,10 @@ export default function AIPlayground() {
           break;
 
         case 'chat':
-          result = await aimlAPI.chat(
-            [
-              { role: 'system', content: `You are a helpful coding assistant. The user is working with ${language} code.` },
-              { role: 'user', content: userMessage },
-            ],
-            model,
-            'general'
-          );
+          result = await aimlAPI.chat([
+            { role: 'system', content: `You are a helpful coding assistant. The user is working with ${language} code.` },
+            { role: 'user', content: userMessage },
+          ]);
           setExplanation(result);
           setActiveTab('explanation');
           break;
@@ -238,29 +234,11 @@ export default function AIPlayground() {
         </div>
         <div className="flex items-center gap-2">
           <Badge variant="outline">
+            Model: GPT-4o
+          </Badge>
+          <Badge variant="outline">
             Tokens: {tokensUsed.toLocaleString()}
           </Badge>
-          <Select value={model} onValueChange={(v) => setModel(v as AIModel)}>
-            <SelectTrigger className="w-[200px]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="auto">
-                <div className="flex items-center gap-2">
-                  <Sparkles className="w-4 h-4" />
-                  Auto Select
-                </div>
-              </SelectItem>
-              {Object.entries(MODEL_CONFIGS).map(([key, config]) => {
-                if (!config) return null;
-                return (
-                  <SelectItem key={key} value={key}>
-                    {config.name}
-                  </SelectItem>
-                );
-              })}
-            </SelectContent>
-          </Select>
         </div>
       </div>
 
@@ -325,9 +303,7 @@ export default function AIPlayground() {
               AI Assistant
             </CardTitle>
             <CardDescription>
-              {model === 'auto'
-                ? 'AI will select best model'
-                : MODEL_CONFIGS[model]?.description}
+              Powered by GPT-4o via AIML API
             </CardDescription>
           </CardHeader>
           <CardContent className="flex-1 flex flex-col gap-3 min-h-0">
