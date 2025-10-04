@@ -169,7 +169,8 @@ class GitHubAPI {
   async createRepository(
     name: string,
     description: string,
-    isPrivate: boolean = false
+    isPrivate: boolean = false,
+    autoInit: boolean = true
   ): Promise<Repository> {
     return this.request('/user/repos', {
       method: 'POST',
@@ -177,7 +178,23 @@ class GitHubAPI {
         name,
         description,
         private: isPrivate,
-        auto_init: true,
+        auto_init: autoInit,
+      }),
+    });
+  }
+
+  // Create an issue
+  async createIssue(
+    owner: string,
+    repo: string,
+    title: string,
+    body?: string
+  ): Promise<{ id: number; number: number; title: string; body: string; html_url: string }> {
+    return this.request(`/repos/${owner}/${repo}/issues`, {
+      method: 'POST',
+      body: JSON.stringify({
+        title,
+        body: body || '',
       }),
     });
   }

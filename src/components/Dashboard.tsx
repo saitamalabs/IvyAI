@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useRouter } from 'next/navigation';
 import Header from './Header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -16,9 +16,8 @@ import {
   Shield,
   Zap,
   MessageSquare,
-  X
+  ArrowRight
 } from 'lucide-react';
-import FeatureChatInterface from './FeatureChatInterface';
 
 interface Feature {
   id: string;
@@ -107,7 +106,7 @@ const FEATURES: Feature[] = [
 
 export default function Dashboard() {
   const { user } = useAuth();
-  const [selectedFeature, setSelectedFeature] = useState<Feature | null>(null);
+  const router = useRouter();
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -120,7 +119,7 @@ export default function Dashboard() {
             Welcome back, {user?.name || user?.login}!
           </h2>
           <p className="text-gray-600 dark:text-gray-400">
-            Choose a feature below to get started with AI-powered development
+            Choose an AI agent below to get started
           </p>
         </div>
 
@@ -132,7 +131,7 @@ export default function Dashboard() {
               <Card 
                 key={feature.id}
                 className="group hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 cursor-pointer border-2 hover:border-blue-500"
-                onClick={() => setSelectedFeature(feature)}
+                onClick={() => router.push(`/agent/${feature.id}`)}
               >
                 <CardHeader className="pb-3">
                   <div className={`w-16 h-16 rounded-2xl ${feature.bgColor} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
@@ -149,7 +148,8 @@ export default function Dashboard() {
                   </CardDescription>
                   <div className="mt-4 flex items-center gap-2 text-blue-600 dark:text-blue-400 text-sm font-medium">
                     <MessageSquare className="w-4 h-4" />
-                    <span>Open Chat</span>
+                    <span>Open Agent</span>
+                    <ArrowRight className="w-4 h-4 ml-auto" />
                   </div>
                 </CardContent>
               </Card>
@@ -157,14 +157,6 @@ export default function Dashboard() {
           })}
         </div>
       </main>
-
-      {/* Feature Chat Interface Modal */}
-      {selectedFeature && (
-        <FeatureChatInterface 
-          feature={selectedFeature}
-          onClose={() => setSelectedFeature(null)}
-        />
-      )}
     </div>
   );
 }
