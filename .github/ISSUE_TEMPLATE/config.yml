@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 GitHub Discussions
+    url: https://github.com/yourusername/IvyAI/discussions
+    about: Ask questions and discuss ideas with the community
+  - name: 📚 Documentation
+    url: https://github.com/yourusername/IvyAI#readme
+    about: Read our comprehensive documentation
+  - name: 🎃 Hacktoberfest Guide
+    url: https://hacktoberfest.com/participation/
+    about: Learn more about Hacktoberfest participation

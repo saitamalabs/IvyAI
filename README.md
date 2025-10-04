@@ -1,6 +1,25 @@
 # 🤖 IvyAI - AI Coding Agent SaaS Platform
 
+[![Hacktoberfest 2025](https://img.shields.io/badge/Hacktoberfest-2025-blueviolet)](https://hacktoberfest.com)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Contributors](https://img.shields.io/github/contributors/yourusername/IvyAI)](https://github.com/yourusername/IvyAI/graphs/contributors)
+
 A comprehensive AI coding agent that competes with GitHub Copilot. Build complete projects, review code, and accelerate development with multi-model AI integration (Claude 3.5 Sonnet, Gemini 2.0 Flash, GPT-4o).
+
+## 🎃 Hacktoberfest 2025
+
+**We're participating in Hacktoberfest 2025!** This is a great opportunity to contribute to open source and earn swag. Check out our [Hacktoberfest Issues](https://github.com/yourusername/IvyAI/labels/hacktoberfest) to get started!
+
+### How to Participate
+1. 🍴 Fork this repository
+2. 🔍 Browse [good first issues](https://github.com/yourusername/IvyAI/labels/good%20first%20issue)
+3. 🛠️ Pick an issue and comment that you're working on it
+4. 💻 Make your changes following our [Contributing Guidelines](#-contributing)
+5. 🚀 Submit a PR and wait for review
+6. 🎉 Get your PR merged and celebrate!
+
+**Read our [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) before contributing.**
 
 ## ✨ Key Features
 
@@ -363,20 +382,117 @@ npm run build
 
 ## 🤝 Contributing
 
-We welcome contributions! Here's how:
+We love your input! We want to make contributing to IvyAI as easy and transparent as possible, whether it's:
 
-1. **Fork** the repository
-2. **Create** feature branch (`git checkout -b feature/amazing-feature`)
-3. **Commit** changes (`git commit -m 'Add amazing feature'`)
-4. **Push** to branch (`git push origin feature/amazing-feature`)
-5. **Open** Pull Request
+- 🐛 Reporting a bug
+- 💬 Discussing the current state of the code
+- 🚀 Submitting a fix
+- 💡 Proposing new features
+- 👨‍💻 Becoming a maintainer
 
-### Development Guidelines
-- Follow TypeScript best practices
-- Use Tailwind CSS for styling
-- Write descriptive commit messages
-- Test thoroughly before submitting
-- Update documentation as needed
+### Quick Start for Contributors
+
+1. **Fork** the repository (click Fork button at top right)
+2. **Clone** your fork
+   ```bash
+   git clone https://github.com/YOUR_USERNAME/IvyAI.git
+   cd IvyAI
+   ```
+3. **Create** a feature branch
+   ```bash
+   git checkout -b feature/amazing-feature
+   # or
+   git checkout -b fix/bug-fix
+   ```
+4. **Install** dependencies
+   ```bash
+   npm install
+   ```
+5. **Make** your changes
+6. **Test** thoroughly
+   ```bash
+   npm run build
+   npm run dev
+   ```
+7. **Commit** with a descriptive message
+   ```bash
+   git commit -m "feat: add amazing feature"
+   # or
+   git commit -m "fix: resolve issue #123"
+   ```
+8. **Push** to your fork
+   ```bash
+   git push origin feature/amazing-feature
+   ```
+9. **Open** a Pull Request
+
+### Contribution Guidelines
+
+#### Code Style
+- ✅ Use TypeScript for type safety
+- ✅ Follow existing code structure and naming conventions
+- ✅ Use Tailwind CSS for styling (no inline styles)
+- ✅ Write clean, self-documenting code
+- ✅ Add comments for complex logic
+
+#### Commit Messages
+Follow [Conventional Commits](https://www.conventionalcommits.org/):
+- `feat:` - New feature
+- `fix:` - Bug fix
+- `docs:` - Documentation changes
+- `style:` - Code style changes (formatting, etc.)
+- `refactor:` - Code refactoring
+- `test:` - Adding tests
+- `chore:` - Maintenance tasks
+
+Examples:
+```bash
+feat: add dark mode toggle to dashboard
+fix: resolve authentication redirect issue
+docs: update installation instructions
+```
+
+#### Pull Request Process
+1. 📝 Update README.md with details of changes if needed
+2. 🧪 Ensure all tests pass and app builds successfully
+3. 📸 Add screenshots for UI changes
+4. 🔗 Link related issues in PR description
+5. ✅ Wait for review from maintainers
+6. 🔄 Address any requested changes
+7. 🎉 Celebrate when merged!
+
+#### What to Contribute?
+
+**Good First Issues** (Perfect for beginners):
+- 🎨 UI/UX improvements
+- 📝 Documentation enhancements
+- 🐛 Bug fixes
+- ✅ Adding tests
+- 🌐 Translations
+
+**Advanced Contributions**:
+- 🚀 New AI agents/features
+- ⚡ Performance optimizations
+- 🔧 Refactoring
+- 🧪 Integration testing
+- 📦 New project templates
+
+**Hacktoberfest Special**:
+Look for issues labeled with:
+- `hacktoberfest` - Hacktoberfest eligible
+- `good first issue` - Beginner friendly
+- `help wanted` - We need help!
+- `enhancement` - New features
+
+### Code of Conduct
+
+Please read and follow our [Code of Conduct](CODE_OF_CONDUCT.md) to keep our community respectful and inclusive.
+
+### Questions?
+
+- 💬 Open a [Discussion](https://github.com/yourusername/IvyAI/discussions)
+- 🐛 Report bugs via [Issues](https://github.com/yourusername/IvyAI/issues)
+- 📧 Email: contribute@ivyai.dev
 
 ## 📈 Roadmap
 
