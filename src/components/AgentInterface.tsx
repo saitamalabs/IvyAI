@@ -61,6 +61,7 @@ export default function AgentInterface({
   const [pullRequests, setPullRequests] = useState<PullRequest[]>([]);
   const [selectedPR, setSelectedPR] = useState<PullRequest | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messageTimestamps = useRef<number[]>([]); // Track message timestamps for rate limiting
 
   // Auto-scroll to bottom when messages change
   useEffect(() => {
@@ -443,12 +444,105 @@ export default function AgentInterface({
     }
   };
 
-  const handleSendMessage = async () => {
-    if (!input.trim() || loading) return;
+  /**
+   * Check rate limiting - prevent spam/abuse
+   * Returns error message if rate limited, null if ok
+   */
+  const checkRateLimit = (): string | null => {
+    const now = Date.now();
+    const ONE_MINUTE = 60 * 1000;
+    const MAX_MESSAGES_PER_MINUTE = 10;
+    
+    // Remove timestamps older than 1 minute
+    messageTimestamps.current = messageTimestamps.current.filter(
+      timestamp => now - timestamp < ONE_MINUTE
+    );
+    
+    // Check if user has exceeded rate limit
+    if (messageTimestamps.current.length >= MAX_MESSAGES_PER_MINUTE) {
+      return `Too many messages. Please wait a moment before sending more. (Maximum ${MAX_MESSAGES_PER_MINUTE} messages per minute)`;
+    }
+    
+    return null; // OK to send
+  };
 
+  /**
+   * Validate user input before sending to AI
+   * Returns error message if invalid, null if valid
+   */
+  const validateMessage = (message: string): string | null => {
+    // Trim whitespace
+    const trimmed = message.trim();
+    
+    // Check if empty
+    if (!trimmed || trimmed.length === 0) {
+      return 'Message cannot be empty';
+    }
+    
+    // Check minimum length
+    if (trimmed.length < 2) {
+      return 'Message must be at least 2 characters long';
+    }
+    
+    // Check maximum length
+    const MAX_LENGTH = 5000;
+    if (trimmed.length > MAX_LENGTH) {
+      return `Message is too long. Maximum ${MAX_LENGTH} characters allowed (currently ${trimmed.length})`;
+    }
+    
+    // Check for suspicious patterns (XSS attempts)
+    const suspiciousPatterns = [
+      /<script[^>]*>.*?<\/script>/gi,
+      /javascript:/gi,
+      /on\w+\s*=\s*["'][^"']*["']/gi,
+      /<iframe/gi,
+    ];
+    
+    for (const pattern of suspiciousPatterns) {
+      if (pattern.test(trimmed)) {
+        return 'Message contains invalid content. Please remove any script tags or event handlers.';
+      }
+    }
+    
+    return null; // Valid
+  };
+
+  /**
+   * Sanitize message content to prevent XSS when displayed
+   */
+  const sanitizeMessage = (message: string): string => {
+    return message
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#x27;')
+      .replace(/\//g, '&#x2F;');
+  };
+
+  const handleSendMessage = async () => {
+    if (loading) return;
+
+    // Check rate limiting
+    const rateLimitError = checkRateLimit();
+    if (rateLimitError) {
+      toast.error(rateLimitError);
+      return;
+    }
+
+    // Validate input
+    const validationError = validateMessage(input);
+    if (validationError) {
+      toast.error(validationError);
+      return;
+    }
+
+    // Record timestamp for rate limiting
+    messageTimestamps.current.push(Date.now());
+
+    const trimmedInput = input.trim();
     const userMessage: Message = {
       role: 'user',
-      content: input.trim(),
+      content: trimmedInput,
       timestamp: new Date()
     };
 
@@ -801,25 +895,39 @@ After getting all required info, include the action tag in your response.`;
             {/* Input */}
             <div className="border-t p-4">
               <div className="flex gap-2">
-                <Textarea
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                      e.preventDefault();
-                      handleSendMessage();
-                    }
-                  }}
-                  placeholder={`Ask ${agentName} anything...`}
-                  className="resize-none"
-                  rows={2}
-                  disabled={loading}
-                />
+                <div className="flex-1 relative">
+                  <Textarea
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        handleSendMessage();
+                      }
+                    }}
+                    placeholder={`Ask ${agentName} anything...`}
+                    className={`resize-none ${input.length > 5000 ? 'border-red-500 focus:border-red-500' : ''}`}
+                    rows={2}
+                    disabled={loading}
+                    maxLength={5100} // Slightly over limit to allow showing error
+                  />
+                  {/* Character Counter */}
+                  <div className={`absolute bottom-2 right-2 text-xs ${
+                    input.length > 5000 
+                      ? 'text-red-600 font-semibold' 
+                      : input.length > 4500 
+                      ? 'text-yellow-600' 
+                      : 'text-muted-foreground'
+                  }`}>
+                    {input.length}/5000
+                  </div>
+                </div>
                 <Button
                   onClick={handleSendMessage}
-                  disabled={loading || !input.trim()}
+                  disabled={loading || !input.trim() || input.length > 5000}
                   size="icon"
                   className="shrink-0 h-full"
+                  title={input.length > 5000 ? 'Message too long' : 'Send message'}
                 >
                   {loading ? (
                     <Loader2 className="w-5 h-5 animate-spin" />
@@ -828,9 +936,16 @@ After getting all required info, include the action tag in your response.`;
                   )}
                 </Button>
               </div>
-              <p className="text-xs text-muted-foreground mt-2">
-                Press Enter to send, Shift+Enter for new line
-              </p>
+              <div className="flex items-center justify-between mt-2">
+                <p className="text-xs text-muted-foreground">
+                  Press Enter to send, Shift+Enter for new line
+                </p>
+                {input.length > 5000 && (
+                  <p className="text-xs text-red-600 font-medium">
+                    Message exceeds maximum length
+                  </p>
+                )}
+              </div>
             </div>
           </CardContent>
         </Card>
