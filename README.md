@@ -89,7 +89,7 @@ An intelligent code review assistant that leverages Google Gemini AI and GitHub 
 - **Language:** TypeScript
 - **Styling:** Tailwind CSS 4
 - **UI Components:** Radix UI, shadcn/ui
-- **AI:** Google Gemini 1.5 Flash
+- **AI:** Google Gemini 2.5 Pro (Most Advanced Model)
 - **Authentication:** GitHub OAuth
 - **API:** GitHub REST API
 

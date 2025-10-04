@@ -1,4 +1,6 @@
 // Google Gemini AI Service for Code Review
+// Using Gemini 2.5 Pro - Google's most advanced model
+// Capabilities: Advanced reasoning, complex code analysis, large context window
 
 import { PRFile } from './githubAPI';
 
@@ -13,7 +15,7 @@ export interface AIReviewResult {
 
 class GeminiAPI {
   private apiKey: string | null = null;
-  private baseUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
+  private baseUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent';
 
   setApiKey(key: string) {
     this.apiKey = key;
@@ -134,6 +136,7 @@ Be constructive, specific, and actionable in your feedback.`;
     }
 
     try {
+      console.log('[Gemini API] Calling:', this.baseUrl);
       const response = await fetch(`${this.baseUrl}?key=${this.apiKey}`, {
         method: 'POST',
         headers: {
@@ -156,19 +159,32 @@ Be constructive, specific, and actionable in your feedback.`;
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
-        console.error('Gemini API error response:', errorData);
-        throw new Error(errorData?.error?.message || `Gemini API error: ${response.status} - ${response.statusText}`);
+        console.error('[Gemini API] Error response:', errorData);
+        
+        let errorMessage = `Gemini API error: ${response.status}`;
+        if (errorData?.error?.message) {
+          errorMessage = errorData.error.message;
+        }
+        
+        // Provide helpful suggestion for model errors
+        if (errorMessage.includes('not found') || errorMessage.includes('not supported')) {
+          errorMessage += '\n\nTry using: gemini-pro or gemini-1.5-pro-latest';
+        }
+        
+        throw new Error(errorMessage);
       }
 
       const data = await response.json();
+      console.log('[Gemini API] Success response received');
       
       if (!data.candidates || !data.candidates[0]?.content?.parts?.[0]?.text) {
+        console.error('[Gemini API] Invalid response structure:', data);
         throw new Error('Invalid response from Gemini API');
       }
 
       return data.candidates[0].content.parts[0].text;
     } catch (error) {
-      console.error('Gemini API call error:', error);
+      console.error('[Gemini API] Call error:', error);
       throw error;
     }
   }

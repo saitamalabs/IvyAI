@@ -13,7 +13,7 @@ export default function LandingPage() {
     {
       icon: Bot,
       title: 'Intelligent PR Reviews',
-      description: 'AI-powered code analysis using Google Gemini to identify bugs, security issues, and code quality problems.',
+      description: 'AI-powered code analysis using Google Gemini 2.5 Pro to identify bugs, security issues, and code quality problems.',
       color: 'text-blue-600 dark:text-blue-400',
       bgColor: 'bg-blue-100 dark:bg-blue-900/20',
     },
@@ -79,7 +79,7 @@ export default function LandingPage() {
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 dark:bg-blue-900/30 rounded-full mb-6">
             <Sparkles className="w-4 h-4 text-blue-600 dark:text-blue-400" />
             <span className="text-sm font-medium text-blue-600 dark:text-blue-400">
-              Powered by Google Gemini AI
+              Powered by Google Gemini 2.5 Pro - Most Advanced AI
             </span>
           </div>
           
@@ -211,7 +211,7 @@ export default function LandingPage() {
             {' • '}
             <span>MIT License</span>
             {' • '}
-            <span>Powered by Google Gemini AI & GitHub</span>
+            <span>Powered by Google Gemini 2.5 Pro & GitHub</span>
           </p>
         </footer>
       </main>
