@@ -14,15 +14,45 @@ IvyAI is a comprehensive AI development platform featuring 9 specialized AI agen
 
 ## 🎃 Hacktoberfest 2025
 
-**We're participating in Hacktoberfest 2025!** This is a great opportunity to contribute to open source and earn swag. Check out our [Hacktoberfest Issues](https://github.com/yourusername/IvyAI/labels/hacktoberfest) to get started!
+**We're participating in Hacktoberfest 2025!** This is a great opportunity to contribute to open source and earn swag. Whether you want to fix bugs, add features, improve documentation, or **report new issues** - all contributions are welcome!
 
-### How to Participate
+### 🎯 Ways to Contribute
+
+**Option 1: Work on Existing Issues**
 1. 🍴 Fork this repository
-2. 🔍 Browse [good first issues](https://github.com/yourusername/IvyAI/labels/good%20first%20issue)
-3. 🛠️ Pick an issue and comment that you're working on it
-4. 💻 Make your changes following our [Contributing Guidelines](#-contributing)
-5. 🚀 Submit a PR and wait for review
-6. 🎉 Get your PR merged and celebrate!
+2. 🔍 Browse [good first issues](https://github.com/yourusername/IvyAI/labels/good%20first%20issue) or [hacktoberfest issues](https://github.com/yourusername/IvyAI/labels/hacktoberfest)
+3. 💬 Comment on the issue saying you'd like to work on it
+4. ⏳ Wait for maintainer approval
+5. 💻 Make your changes following our [Contributing Guidelines](#-contributing)
+6. 🚀 Submit a PR and link it to the issue
+7. 🎉 Get your PR merged and celebrate!
+
+**Option 2: Report Bugs or Suggest Features** ⭐ NEW!
+1. 🔍 Check if the issue already exists in [Issues](https://github.com/yourusername/IvyAI/issues)
+2. 📝 Create a new issue using our templates:
+   - [🐛 Bug Report](.github/ISSUE_TEMPLATE/bug_report.md) - Found a bug? Let us know!
+   - [✨ Feature Request](.github/ISSUE_TEMPLATE/feature_request.md) - Have an idea? Share it!
+   - [🎃 Hacktoberfest Contribution](.github/ISSUE_TEMPLATE/hacktoberfest.md) - Want to contribute but not sure where to start?
+3. 💡 Optionally, you can work on the issue yourself after creating it!
+4. 🏷️ Add appropriate labels (bug, enhancement, documentation, etc.)
+
+### 📋 What Counts as a Valid Contribution?
+
+✅ **Valid Contributions:**
+- Bug fixes with proper testing
+- New features with documentation
+- Performance improvements
+- UI/UX enhancements
+- Documentation updates
+- Writing tests
+- Reporting detailed bugs
+- Creating well-researched feature requests
+
+❌ **Invalid Contributions:**
+- Spam PRs (whitespace changes, typo fixes without permission)
+- Duplicate issues or PRs
+- Low-quality or incomplete work
+- PRs without linked issues (for code changes)
 
 **Read our [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) before contributing.**
 
@@ -447,13 +477,62 @@ npm run build
 
 We love your input! We want to make contributing to IvyAI as easy and transparent as possible, whether it's:
 
-- 🐛 Reporting a bug
-- 💬 Discussing the current state of the code
-- 🚀 Submitting a fix
-- 💡 Proposing new features
-- 👨‍💻 Becoming a maintainer
+- 🐛 **Reporting a bug** - Help us improve by reporting issues
+- 💡 **Proposing new features** - Share your ideas for enhancements
+- 💬 **Discussing the current state of the code** - Join the conversation
+- 🚀 **Submitting a fix** - Help us squash bugs
+- ✨ **Adding new features** - Bring your ideas to life
+- 📝 **Improving documentation** - Make it easier for others
+- 👨‍💻 **Becoming a maintainer** - Join our core team
 
-### Quick Start for Contributors
+### 📝 Creating Issues (No Code Required!)
+
+You don't need to write code to contribute! **Reporting bugs and suggesting features** is a valuable contribution.
+
+**How to Create a Good Issue:**
+
+1. **Search first** - Check if your issue already exists in [Issues](https://github.com/yourusername/IvyAI/issues)
+2. **Use our templates** - We have templates for different types of issues:
+   - 🐛 [Bug Report](.github/ISSUE_TEMPLATE/bug_report.md) - Something not working?
+   - ✨ [Feature Request](.github/ISSUE_TEMPLATE/feature_request.md) - Have an idea?
+   - 🎃 [Hacktoberfest](.github/ISSUE_TEMPLATE/hacktoberfest.md) - Want to contribute?
+
+3. **Be detailed** - Include:
+   - Clear title and description
+   - Steps to reproduce (for bugs)
+   - Expected vs actual behavior
+   - Screenshots if applicable
+   - Your environment (OS, browser, Node version)
+
+4. **Add labels** - Help us categorize:
+   - `bug` - Something isn't working
+   - `enhancement` - New feature or request
+   - `documentation` - Documentation improvements
+   - `good first issue` - Good for newcomers
+   - `help wanted` - Community help needed
+   - `hacktoberfest` - Hacktoberfest eligible
+
+**Example Good Bug Report:**
+```
+Title: Dashboard crashes when clicking on Project Generator agent
+
+Description: When I click the "AI Project Generator" card on the dashboard,
+the app crashes with a blank screen.
+
+Steps to Reproduce:
+1. Sign in with GitHub
+2. Navigate to dashboard
+3. Click "AI Project Generator" card
+4. See error
+
+Expected: Agent chat interface should open
+Actual: Blank screen appears
+
+Environment: Windows 11, Chrome 120, Node 18.17
+Screenshot: [attached]
+```
+
+### Quick Start for Code Contributors
 
 1. **Fork** the repository (click Fork button at top right)
 2. **Clone** your fork
