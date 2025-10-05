@@ -1,95 +1,209 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useAuth } from '@/contexts/AuthContext';
-import { Code, LogOut, User, LayoutDashboard, Sparkles, Rocket } from 'lucide-react';
+import { Menu, LayoutDashboard, Sparkles, Rocket } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { UserDropdown } from "@/components/ui/UserDropdown";
 import ThemeToggle from './ThemeToggle';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import Image from 'next/image';
+import { useRouter, usePathname } from 'next/navigation';
 
 export default function Header() {
-  const { user, logout } = useAuth();
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { user, login } = useAuth();
+  const router = useRouter();
   const pathname = usePathname();
 
-  const navLinks = [
-    { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { href: '/playground', label: 'Playground', icon: Sparkles },
-    { href: '/projects', label: 'Projects', icon: Rocket },
-  ];
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToSection = (sectionId: string) => {
+    if (pathname !== '/') {
+      router.push('/');
+      setTimeout(() => {
+        const element = document.getElementById(sectionId);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+      return;
+    }
+
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const handleGetStarted = async () => {
+    if (user) {
+      router.push('/dashboard');
+    } else {
+      try {
+        login();
+      } catch (error) {
+        console.error('Authentication failed:', error);
+        alert('Authentication failed. Please try again.');
+      }
+    }
+  };
+
+  const navItems = [];
+
+  // Only show Features on landing page
+  if (pathname === '/') {
+    navItems.push({ 
+      name: "Features", 
+      href: "#features", 
+      onClick: () => scrollToSection('features') 
+    });
+  }
+
+  // Show dashboard links when authenticated and not on dashboard
+  if (user && pathname !== '/dashboard') {
+    navItems.unshift({
+      name: "Dashboard",
+      href: "/dashboard",
+      onClick: () => router.push('/dashboard')
+    });
+  }
+
+  // Add Playground and Projects links when authenticated
+  if (user) {
+    if (pathname !== '/playground') {
+      navItems.push({
+        name: "Playground",
+        href: "/playground",
+        onClick: () => router.push('/playground')
+      });
+    }
+    if (pathname !== '/projects') {
+      navItems.push({
+        name: "Projects",
+        href: "/projects",
+        onClick: () => router.push('/projects')
+      });
+    }
+  }
 
   return (
-    <header className="border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 sticky top-0 z-50 shadow-sm">
-      <div className="container mx-auto px-4 py-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-8">
-            <Link href={user ? '/dashboard' : '/'} className="flex items-center gap-2">
-              <Code className="w-8 h-8 text-blue-600" />
-              <h1 className="text-2xl font-bold text-gray-800 dark:text-white">IvyAI</h1>
-            </Link>
+    <header
+      className={`fixed top-3.5 left-1/2 -translate-x-1/2 z-50 transition-all duration-300 rounded-full ${
+        isScrolled 
+          ? "h-14 bg-background/40 backdrop-blur-xl border border-white/10 dark:border-white/10 scale-95 w-[90%] max-w-2xl" 
+          : "h-14 bg-background/80 backdrop-blur-md border border-border w-[95%] max-w-3xl"
+      }`}
+    >
+      <div className="mx-auto h-full px-6">
+        <nav className="flex items-center justify-between h-full">
+          <div 
+            className="flex items-center gap-2 cursor-pointer"
+            onClick={() => router.push(user ? '/dashboard' : '/')}
+          >
+            <Image 
+              src="/logo.png" 
+              alt="IvyAI Logo" 
+              width={28} 
+              height={28}
+              className="w-7 h-7"
+            />
+            <span className="font-bold text-base">IvyAI</span>
+          </div>
+
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center gap-4">
+            {navItems.map((item) => (
+              <a
+                key={item.name}
+                href={item.href}
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (item.onClick) {
+                    item.onClick();
+                  }
+                }}
+                className="text-sm text-muted-foreground hover:text-foreground transition-all duration-300"
+              >
+                {item.name}
+              </a>
+            ))}
             
-            {user && (
-              <nav className="hidden md:flex items-center gap-1">
-                {navLinks.map((link) => {
-                  const Icon = link.icon;
-                  const isActive = pathname === link.href;
-                  return (
-                    <Link key={link.href} href={link.href}>
-                      <Button
-                        variant={isActive ? 'secondary' : 'ghost'}
-                        size="sm"
-                        className="flex items-center gap-2"
-                      >
-                        <Icon className="w-4 h-4" />
-                        {link.label}
-                      </Button>
-                    </Link>
-                  );
-                })}
-              </nav>
+            <ThemeToggle />
+            
+            {user ? (
+              <UserDropdown />
+            ) : (
+              <Button 
+                onClick={handleGetStarted}
+                size="sm"
+                className="button-gradient"
+              >
+                Get Started
+              </Button>
             )}
           </div>
 
-          <div className="flex items-center gap-2">
-            <ThemeToggle />
-            {user && (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="flex items-center gap-2">
-                    <Avatar className="w-8 h-8">
-                      <AvatarImage src={user.avatar_url} alt={user.login} />
-                      <AvatarFallback>
-                        <User className="w-4 h-4" />
-                      </AvatarFallback>
-                    </Avatar>
-                    <span className="hidden md:inline">{user.login}</span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuLabel>
-                    <div className="flex flex-col">
-                      <span className="font-semibold">{user.name || user.login}</span>
-                      <span className="text-xs text-gray-500">{user.email || 'No email'}</span>
+          {/* Mobile Navigation */}
+          <div className="md:hidden">
+            <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+              <SheetTrigger asChild>
+                <Button variant="outline" size="icon" className="glass h-9 w-9">
+                  <Menu className="h-5 w-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent className="bg-background/95 backdrop-blur-xl">
+                <div className="flex flex-col gap-4 mt-8">
+                  {navItems.map((item) => (
+                    <a
+                      key={item.name}
+                      href={item.href}
+                      className="text-lg text-muted-foreground hover:text-foreground transition-colors"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setIsMobileMenuOpen(false);
+                        if (item.onClick) {
+                          item.onClick();
+                        }
+                      }}
+                    >
+                      {item.name}
+                    </a>
+                  ))}
+                  
+                  <div className="flex items-center gap-2 py-2">
+                    <span className="text-sm text-muted-foreground">Theme</span>
+                    <ThemeToggle />
+                  </div>
+                  
+                  {user ? (
+                    <div className="mt-4">
+                      <UserDropdown />
                     </div>
-                  </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={logout} className="cursor-pointer text-red-600">
-                    <LogOut className="w-4 h-4 mr-2" />
-                    Logout
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            )}
+                  ) : (
+                    <Button 
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                        handleGetStarted();
+                      }}
+                      className="button-gradient mt-4"
+                    >
+                      Get Started
+                    </Button>
+                  )}
+                </div>
+              </SheetContent>
+            </Sheet>
           </div>
-        </div>
+        </nav>
       </div>
     </header>
   );

@@ -4,13 +4,12 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Code, Sparkles, GitPullRequest, Globe, Github, Zap, Shield, Bot, Rocket, TestTube2, FileCode, Check, Star, Users, ArrowRight, Play, Menu, X } from 'lucide-react';
-import ThemeToggle from './ThemeToggle';
-import { useState } from 'react';
+import { Code, Sparkles, GitPullRequest, Globe, Github, Zap, Shield, Bot, Rocket, TestTube2, FileCode, Check, Star, Users, ArrowRight, Play } from 'lucide-react';
+import Image from 'next/image';
+import Header from './Header';
 
 export default function LandingPage() {
   const { login } = useAuth();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const features = [
     {
@@ -72,82 +71,11 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950">
-      {/* Modern Navbar */}
-      <nav className="fixed top-0 w-full bg-white/80 dark:bg-gray-950/80 backdrop-blur-lg border-b border-gray-200 dark:border-gray-800 z-50">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <div className="flex items-center gap-2">
-              <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-br from-blue-600 to-purple-600">
-                <Code className="w-6 h-6 text-white" />
-              </div>
-              <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                IvyAI
-              </span>
-            </div>
+      <Header />
 
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-8">
-              <a href="#features" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                Features
-              </a>
-              <a href="#pricing" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                Pricing
-              </a>
-              <a href="#about" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                About
-              </a>
-            </div>
-
-            {/* CTA Buttons */}
-            <div className="hidden md:flex items-center gap-4">
-              <ThemeToggle />
-              <Button 
-                onClick={login}
-                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg shadow-blue-500/50"
-              >
-                <Github className="w-4 h-4 mr-2" />
-                Sign in
-              </Button>
-            </div>
-
-            {/* Mobile Menu Button */}
-            <div className="md:hidden flex items-center gap-2">
-              <ThemeToggle />
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              >
-                {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-              </Button>
-            </div>
-          </div>
-
-          {/* Mobile Menu */}
-          {mobileMenuOpen && (
-            <div className="md:hidden py-4 space-y-4 border-t border-gray-200 dark:border-gray-800">
-              <a href="#features" className="block text-gray-700 dark:text-gray-300 hover:text-blue-600">
-                Features
-              </a>
-              <a href="#pricing" className="block text-gray-700 dark:text-gray-300 hover:text-blue-600">
-                Pricing
-              </a>
-              <a href="#about" className="block text-gray-700 dark:text-gray-300 hover:text-blue-600">
-                About
-              </a>
-              <Button onClick={login} className="w-full bg-gradient-to-r from-blue-600 to-purple-600">
-                <Github className="w-4 h-4 mr-2" />
-                Sign in with GitHub
-              </Button>
-            </div>
-          )}
-        </div>
-      </nav>
-
-      <main className="pt-16">
+      <main>
         {/* Hero Section */}
-        <section className="relative overflow-hidden bg-gradient-to-b from-blue-50 via-white to-white dark:from-gray-900 dark:via-gray-950 dark:to-gray-950">
+        <section className="relative overflow-hidden bg-gradient-to-b from-blue-50 via-white to-white dark:from-gray-900 dark:via-gray-950 dark:to-gray-950 pt-20">
           <div className="absolute inset-0 bg-grid-gray-900/[0.04] dark:bg-grid-white/[0.02] bg-[size:20px_20px]" />
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-32 relative">
             <div className="text-center max-w-5xl mx-auto">
@@ -354,9 +282,13 @@ export default function LandingPage() {
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col md:flex-row items-center justify-between gap-8">
               <div className="flex items-center gap-2">
-                <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-br from-blue-600 to-purple-600">
-                  <Code className="w-6 h-6 text-white" />
-                </div>
+                <Image 
+                  src="/logo.png" 
+                  alt="IvyAI Logo" 
+                  width={40} 
+                  height={40}
+                  className="w-10 h-10"
+                />
                 <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                   IvyAI
                 </span>

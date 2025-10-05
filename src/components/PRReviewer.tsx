@@ -304,7 +304,7 @@ export default function PRReviewer({ owner, repo, prNumber }: PRReviewerProps) {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Header />
 
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 pt-24 pb-8">
         {/* Back Button */}
         <Button 
           variant="ghost" 

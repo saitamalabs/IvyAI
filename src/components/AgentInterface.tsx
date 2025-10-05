@@ -721,7 +721,7 @@ After getting all required info, include the action tag in your response.`;
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 h-[calc(100vh-80px)]">
+    <div className="container mx-auto px-4 pt-24 pb-8 h-[calc(100vh-80px)]">
       <div className="h-full flex gap-4">
         {/* Sidebar for PR Reviewer and Repo Agent */}
         {(agentId === 'pr-reviewer' || agentId === 'repo-agent') && (
