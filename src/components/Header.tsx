@@ -99,8 +99,8 @@ export default function Header() {
     <header
       className={`fixed top-3.5 left-1/2 -translate-x-1/2 z-50 transition-all duration-300 rounded-full ${
         isScrolled 
-          ? "h-14 bg-background/40 backdrop-blur-xl border border-white/10 dark:border-white/10 scale-95 w-[90%] max-w-2xl" 
-          : "h-14 bg-background/80 backdrop-blur-md border border-border w-[95%] max-w-3xl"
+          ? "h-14 bg-black/40 backdrop-blur-xl border border-white/10 scale-95 w-[90%] max-w-2xl" 
+          : "h-14 bg-black/60 backdrop-blur-md border border-white/10 w-[95%] max-w-3xl"
       }`}
     >
       <div className="mx-auto h-full px-6">
@@ -116,7 +116,7 @@ export default function Header() {
               height={28}
               className="w-7 h-7"
             />
-            <span className="font-bold text-base">IvyAI</span>
+            <span className="font-bold text-base bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">IvyAI</span>
           </div>
 
           {/* Desktop Navigation */}
@@ -131,13 +131,13 @@ export default function Header() {
                     item.onClick();
                   }
                 }}
-                className="text-sm text-muted-foreground hover:text-foreground transition-all duration-300"
+                className="text-sm text-gray-300 hover:text-white transition-all duration-300"
               >
                 {item.name}
               </a>
             ))}
             
-            <ThemeToggle />
+            {pathname !== '/' && <ThemeToggle />}
             
             {user ? (
               <UserDropdown />
@@ -160,7 +160,7 @@ export default function Header() {
                   <Menu className="h-5 w-5" />
                 </Button>
               </SheetTrigger>
-              <SheetContent className="bg-background/95 backdrop-blur-xl">
+              <SheetContent className="bg-black/95 backdrop-blur-xl border-l border-white/10">
                 <div className="flex flex-col gap-4 mt-8">
                   {navItems.map((item) => (
                     <a
@@ -179,10 +179,12 @@ export default function Header() {
                     </a>
                   ))}
                   
-                  <div className="flex items-center gap-2 py-2">
-                    <span className="text-sm text-muted-foreground">Theme</span>
-                    <ThemeToggle />
-                  </div>
+                  {pathname !== '/' && (
+                    <div className="flex items-center gap-2 py-2">
+                      <span className="text-sm text-muted-foreground">Theme</span>
+                      <ThemeToggle />
+                    </div>
+                  )}
                   
                   {user ? (
                     <div className="mt-4">
