@@ -4,7 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Code, Sparkles, GitPullRequest, Globe, Github, Zap, Shield, Bot, Rocket, TestTube2, FileCode, Check, Star, Users, ArrowRight, Play } from 'lucide-react';
+import { Code, Sparkles, GitPullRequest, Globe, Github, Zap, Shield, Bot, Rocket, TestTube2, FileCode, Check, Star, Users, ArrowRight, Play, Brain, MessageSquare, FolderGit2, GitBranch, FileText, SearchCheck } from 'lucide-react';
 import Image from 'next/image';
 import { AnimatedShinyText } from '@/components/ui/animated-shiny-text';
 import { HeroSplineBackground } from '@/components/ui/hero-spline-background';
@@ -15,46 +15,52 @@ export default function LandingPage() {
 
   const features = [
     {
-      icon: Sparkles,
-      title: 'Multi-Model AI',
-      description: 'Access Claude 3.5 Sonnet, Gemini 2.0 Flash, and GPT-4o for optimal code generation and analysis.',
-      color: 'text-blue-600 dark:text-blue-400',
-      bgColor: 'bg-blue-100 dark:bg-blue-900/20',
+      icon: Brain,
+      title: 'Multi-Model Intelligence',
+      description: 'Routes GitHub tasks to Claude, Gemini, or GPT-4—PR reviews to Claude, quick commits to Gemini',
+      badge: 'Smart Routing',
+      color: 'text-blue-400',
+      bgColor: 'bg-blue-500/10',
     },
     {
-      icon: Rocket,
-      title: 'Autonomous Code Generation',
-      description: 'Generate complete, production-ready projects from natural language. Full-stack apps in minutes.',
-      color: 'text-purple-600 dark:text-purple-400',
-      bgColor: 'bg-purple-100 dark:bg-purple-900/20',
+      icon: MessageSquare,
+      title: 'Natural Language GitHub',
+      description: 'Just say "create a repo" or "review this PR"—IvyAI executes via GitHub API',
+      badge: 'Conversational',
+      color: 'text-purple-400',
+      bgColor: 'bg-purple-500/10',
     },
     {
-      icon: Github,
-      title: 'GitHub Integration',
-      description: 'Seamless integration with GitHub. Review PRs, create repos, and manage code directly from IvyAI.',
-      color: 'text-green-600 dark:text-green-400',
-      bgColor: 'bg-green-100 dark:bg-green-900/20',
+      icon: FolderGit2,
+      title: 'Repository Management',
+      description: 'Create, fork, delete repos. Update settings, add collaborators, manage webhooks—all hands-free',
+      badge: 'Full Control',
+      color: 'text-green-400',
+      bgColor: 'bg-green-500/10',
     },
     {
-      icon: FileCode,
-      title: 'Project Scaffolding',
-      description: 'Choose from Next.js, React, Vue, Express, and more. Auto-configure auth, database, and deployment.',
-      color: 'text-orange-600 dark:text-orange-400',
-      bgColor: 'bg-orange-100 dark:bg-orange-900/20',
+      icon: GitBranch,
+      title: 'Branch & PR Automation',
+      description: 'Create branches, open PRs, add reviewers, merge commits—complete Git workflow automation',
+      badge: 'Git Native',
+      color: 'text-orange-400',
+      bgColor: 'bg-orange-500/10',
     },
     {
-      icon: TestTube2,
-      title: 'Automated Testing',
-      description: 'Generate comprehensive unit tests with edge cases, mocks, and high coverage automatically.',
-      color: 'text-pink-600 dark:text-pink-400',
-      bgColor: 'bg-pink-100 dark:bg-pink-900/20',
+      icon: FileText,
+      title: 'Code Operations',
+      description: 'Create, update, delete files across your repos. Batch operations for multi-file changes',
+      badge: 'File Management',
+      color: 'text-pink-400',
+      bgColor: 'bg-pink-500/10',
     },
     {
-      icon: Zap,
-      title: 'One-Click Deployment',
-      description: 'Deploy directly to Vercel with automatic configuration. From code to production instantly.',
-      color: 'text-yellow-600 dark:text-yellow-400',
-      bgColor: 'bg-yellow-100 dark:bg-yellow-900/20',
+      icon: SearchCheck,
+      title: 'PR Review Agent',
+      description: 'AI-powered code reviews with security scans, best practice checks, and inline comments',
+      badge: 'Auto Review',
+      color: 'text-cyan-400',
+      bgColor: 'bg-cyan-500/10',
     },
   ];
 
@@ -138,10 +144,10 @@ export default function LandingPage() {
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
               <Badge variant="outline" className="mb-4 border-blue-400/30 text-blue-300">
-                Powerful Features
+                GitHub-Focused Features
               </Badge>
               <h2 className="text-4xl font-bold text-white mb-4">
-                Everything you need to ship faster
+                One Agent. Your Entire GitHub Workflow.
               </h2>
               <p className="text-gray-300 max-w-2xl mx-auto">
                 IvyAI combines multiple AI models with deep GitHub integration to automate your entire development workflow
@@ -152,8 +158,13 @@ export default function LandingPage() {
               {features.map((feature, index) => (
                 <Card key={index} className="group hover:shadow-2xl hover:shadow-blue-500/20 transition-all duration-300 hover:-translate-y-1 bg-gray-900/50 border-gray-800 backdrop-blur-sm">
                   <CardHeader>
-                    <div className={`w-14 h-14 rounded-xl ${feature.bgColor} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
-                      <feature.icon className={`w-7 h-7 ${feature.color}`} />
+                    <div className="flex items-start justify-between mb-4">
+                      <div className={`w-14 h-14 rounded-xl ${feature.bgColor} flex items-center justify-center group-hover:scale-110 transition-transform`}>
+                        <feature.icon className={`w-7 h-7 ${feature.color}`} />
+                      </div>
+                      <Badge variant="secondary" className="bg-blue-500/10 text-blue-300 border-blue-400/30 text-xs">
+                        {feature.badge}
+                      </Badge>
                     </div>
                     <CardTitle className="text-xl mb-2 text-white">{feature.title}</CardTitle>
                   </CardHeader>
