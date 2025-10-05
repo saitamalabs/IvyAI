@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Code, Sparkles, GitPullRequest, Globe, Github, Zap, Shield, Bot, Rocket, TestTube2, FileCode, Check, Star, Users, ArrowRight, Play } from 'lucide-react';
 import Image from 'next/image';
 import { AnimatedShinyText } from '@/components/ui/animated-shiny-text';
+import { HeroSplineBackground } from '@/components/ui/hero-spline-background';
 import Header from './Header';
 
 export default function LandingPage() {
@@ -71,19 +72,22 @@ export default function LandingPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950">
+    <div className="min-h-screen bg-black">
       <Header />
 
       <main>
         {/* Hero Section */}
-        <section className="relative overflow-hidden bg-gradient-to-b from-blue-50 via-white to-white dark:from-gray-900 dark:via-gray-950 dark:to-gray-950 pt-20">
-          <div className="absolute inset-0 bg-grid-gray-900/[0.04] dark:bg-grid-white/[0.02] bg-[size:20px_20px]" />
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-32 relative">
+        <section className="relative overflow-hidden min-h-screen bg-black pt-20">
+          {/* 3D Spline Background */}
+          <HeroSplineBackground />
+          
+          {/* Content overlay */}
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 relative z-10">
             <div className="text-center max-w-5xl mx-auto">
               {/* Announcement Banner */}
               <div className="mb-8 flex justify-center">
-                <div className="group relative inline-flex items-center justify-center rounded-full border border-blue-200/50 bg-blue-50 transition-all ease-in hover:cursor-pointer hover:bg-blue-100 dark:border-blue-800/50 dark:bg-blue-950/50 dark:hover:bg-blue-900/50 px-4 py-2">
-                  <AnimatedShinyText className="inline-flex items-center justify-center text-blue-900 dark:text-blue-100 transition ease-out hover:text-blue-700 hover:duration-300 dark:hover:text-blue-200">
+                <div className="group relative inline-flex items-center justify-center rounded-full border border-blue-400/30 bg-blue-900/20 backdrop-blur-sm transition-all ease-in hover:cursor-pointer hover:bg-blue-900/30 px-4 py-2">
+                  <AnimatedShinyText className="inline-flex items-center justify-center text-blue-100 transition ease-out hover:text-blue-200 hover:duration-300">
                     <span className="text-sm font-medium">🎉 IvyAI Now Live: Autonomous Multi-Agent Development - Try Free </span>
                     <ArrowRight className="ml-1 size-3 transition-transform duration-300 ease-in-out group-hover:translate-x-0.5" />
                   </AnimatedShinyText>
@@ -91,17 +95,17 @@ export default function LandingPage() {
               </div>
               
               {/* Headline */}
-              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
-                Build Apps with
-                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600">
-                  AI Superpowers
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+                <span className="text-gray-300 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">GitHub Copilot Suggests Code.</span>
+                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 mt-2 drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)]" style={{ WebkitTextStroke: '1px rgba(255,255,255,0.1)' }}>
+                  IvyAI Ships It.
                 </span>
               </h1>
               
               {/* Subheadline */}
-              <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-400 mb-10 max-w-3xl mx-auto leading-relaxed">
-                Generate entire projects, review code, and deploy with a single command. 
-                IvyAI is the AI coding agent that competes with GitHub Copilot.
+              <p className="text-lg sm:text-xl text-gray-300 mb-10 max-w-4xl mx-auto leading-relaxed drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)]">
+                The first autonomous AI agent that understands your intent, writes production code, 
+                manages GitHub repositories, and deploys—all through natural conversation.
               </p>
               
               {/* CTA Buttons */}
@@ -118,74 +122,43 @@ export default function LandingPage() {
                 <Button 
                   variant="outline"
                   size="lg"
-                  className="w-full sm:w-auto text-lg px-8 py-6 border-2"
+                  className="w-full sm:w-auto text-lg px-8 py-6 border-2 border-gray-600 hover:border-gray-400 text-gray-200 hover:text-white bg-black/20 hover:bg-black/40"
                   onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
                 >
                   <Play className="w-5 h-5 mr-2" />
                   See How It Works
                 </Button>
               </div>
-              
-              {/* Trust Indicators */}
-              <div className="flex flex-wrap items-center justify-center gap-8 text-sm text-gray-600 dark:text-gray-400">
-                <div className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-green-600" />
-                  <span>No credit card required</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-green-600" />
-                  <span>100% open source</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-green-600" />
-                  <span>Deploy in 5 minutes</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Stats Section */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-20 max-w-4xl mx-auto">
-              {stats.map((stat, index) => (
-                <div key={index} className="text-center">
-                  <stat.icon className="w-8 h-8 mx-auto mb-2 text-blue-600 dark:text-blue-400" />
-                  <div className="text-3xl font-bold text-gray-900 dark:text-white mb-1">
-                    {stat.value}
-                  </div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">
-                    {stat.label}
-                  </div>
-                </div>
-              ))}
             </div>
           </div>
         </section>
 
         {/* Features Section */}
-        <section id="features" className="py-20 bg-gray-50 dark:bg-gray-900">
+        <section id="features" className="py-20 bg-gradient-to-b from-black via-gray-900 to-black">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
-              <Badge variant="outline" className="mb-4">
+              <Badge variant="outline" className="mb-4 border-blue-400/30 text-blue-300">
                 Powerful Features
               </Badge>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-                Everything you need to build faster
+              <h2 className="text-4xl font-bold text-white mb-4">
+                Everything you need to ship faster
               </h2>
-              <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-                From code generation to deployment, IvyAI has you covered
+              <p className="text-gray-300 max-w-2xl mx-auto">
+                IvyAI combines multiple AI models with deep GitHub integration to automate your entire development workflow
               </p>
             </div>
             
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
               {features.map((feature, index) => (
-                <Card key={index} className="group hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border-2 hover:border-blue-500">
+                <Card key={index} className="group hover:shadow-2xl hover:shadow-blue-500/20 transition-all duration-300 hover:-translate-y-1 bg-gray-900/50 border-gray-800 backdrop-blur-sm">
                   <CardHeader>
                     <div className={`w-14 h-14 rounded-xl ${feature.bgColor} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
                       <feature.icon className={`w-7 h-7 ${feature.color}`} />
                     </div>
-                    <CardTitle className="text-xl mb-2">{feature.title}</CardTitle>
+                    <CardTitle className="text-xl mb-2 text-white">{feature.title}</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <CardDescription className="text-base leading-relaxed">
+                    <CardDescription className="text-base leading-relaxed text-gray-300">
                       {feature.description}
                     </CardDescription>
                   </CardContent>
@@ -196,23 +169,23 @@ export default function LandingPage() {
         </section>
 
         {/* Pricing Section */}
-        <section id="pricing" className="py-20">
+        <section id="pricing" className="py-20 bg-black">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
-              <Badge variant="outline" className="mb-4">
+              <Badge variant="outline" className="mb-4 border-blue-400/30 text-blue-300">
                 Simple Pricing
               </Badge>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">
                 Choose your plan
               </h2>
-              <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+              <p className="text-xl text-gray-300 max-w-2xl mx-auto">
                 Start free, upgrade when you need more power
               </p>
             </div>
 
             <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
               {pricing.map((plan, index) => (
-                <Card key={index} className={`relative ${index === 1 ? 'border-blue-500 border-2 shadow-2xl scale-105' : ''}`}>
+                <Card key={index} className={`relative bg-gray-900/50 border-gray-800 backdrop-blur-sm ${index === 1 ? 'border-blue-500 border-2 shadow-2xl shadow-blue-500/20 scale-105' : ''}`}>
                   {index === 1 && (
                     <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                       <Badge className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
@@ -221,24 +194,24 @@ export default function LandingPage() {
                     </div>
                   )}
                   <CardHeader>
-                    <CardTitle className="text-2xl">{plan.name}</CardTitle>
+                    <CardTitle className="text-2xl text-white">{plan.name}</CardTitle>
                     <div className="mt-4">
-                      <span className="text-4xl font-bold text-gray-900 dark:text-white">{plan.price}</span>
-                      {plan.price !== 'Custom' && <span className="text-gray-600 dark:text-gray-400">/month</span>}
+                      <span className="text-4xl font-bold text-white">{plan.price}</span>
+                      {plan.price !== 'Custom' && <span className="text-gray-400">/month</span>}
                     </div>
                   </CardHeader>
                   <CardContent>
                     <ul className="space-y-3 mb-6">
                       {plan.features.map((feature, i) => (
                         <li key={i} className="flex items-start gap-3">
-                          <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                          <span className="text-gray-700 dark:text-gray-300">{feature}</span>
+                          <Check className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+                          <span className="text-gray-300">{feature}</span>
                         </li>
                       ))}
                     </ul>
                     <Button 
                       onClick={login}
-                      className={`w-full ${index === 1 ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700' : ''}`}
+                      className={`w-full ${index === 1 ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700' : 'border-gray-600 hover:border-gray-400 text-gray-200 hover:text-white'}`}
                       variant={index === 1 ? 'default' : 'outline'}
                     >
                       Get Started
@@ -283,7 +256,7 @@ export default function LandingPage() {
         </section>
 
         {/* Footer */}
-        <footer id="about" className="py-12 border-t border-gray-200 dark:border-gray-800">
+        <footer id="about" className="py-12 bg-black border-t border-gray-800">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col md:flex-row items-center justify-between gap-8">
               <div className="flex items-center gap-2">
@@ -294,26 +267,26 @@ export default function LandingPage() {
                   height={40}
                   className="w-10 h-10"
                 />
-                <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                <span className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
                   IvyAI
                 </span>
               </div>
 
-              <div className="flex flex-wrap items-center justify-center gap-8 text-sm text-gray-600 dark:text-gray-400">
-                <a href="#features" className="hover:text-blue-600 transition-colors">Features</a>
-                <a href="#pricing" className="hover:text-blue-600 transition-colors">Pricing</a>
-                <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="hover:text-blue-600 transition-colors">
+              <div className="flex flex-wrap items-center justify-center gap-8 text-sm text-gray-400">
+                <a href="#features" className="hover:text-blue-400 transition-colors">Features</a>
+                <a href="#pricing" className="hover:text-blue-400 transition-colors">Pricing</a>
+                <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 transition-colors">
                   GitHub
                 </a>
                 <span>MIT License</span>
               </div>
 
-              <div className="text-sm text-gray-600 dark:text-gray-400">
+              <div className="text-sm text-gray-400">
                 Built with ❤️ by developers
               </div>
             </div>
             
-            <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-800 text-center text-sm text-gray-600 dark:text-gray-400">
+            <div className="mt-8 pt-8 border-t border-gray-800 text-center text-sm text-gray-400">
               <p>
                 Powered by Claude 3.5 Sonnet • Gemini 2.0 Flash • GPT-4o • GitHub API
               </p>

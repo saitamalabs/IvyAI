@@ -176,6 +176,16 @@
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
+/* Hide Spline watermark */
+#spline-watermark,
+.spline-watermark,
+a[href*="spline.design"] {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
 /* Hide Next.js error overlay portal */
 nextjs-portal {
   display: none !important;
