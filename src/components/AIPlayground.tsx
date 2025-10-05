@@ -223,7 +223,7 @@ export default function AIPlayground() {
   ];
 
   return (
-    <div className="h-full flex flex-col gap-4 p-4">
+    <div className="h-full flex flex-col gap-4 p-4 pt-24">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>

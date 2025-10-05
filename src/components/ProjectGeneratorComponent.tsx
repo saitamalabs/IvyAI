@@ -167,7 +167,7 @@ export default function ProjectGeneratorComponent() {
   };
 
   return (
-    <div className="container mx-auto p-6 max-w-6xl">
+    <div className="container mx-auto px-6 pt-24 pb-6 max-w-6xl">
       <div className="mb-8">
         <h1 className="text-3xl font-bold flex items-center gap-3">
           <Rocket className="w-8 h-8" />

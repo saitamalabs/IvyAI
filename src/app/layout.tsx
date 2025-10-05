@@ -9,6 +9,13 @@ import { Toaster } from "@/components/ui/sonner";
 export const metadata: Metadata = {
   title: "IvyAI - AI Code Review Assistant",
   description: "IvyAI: Supercharge your code reviews with AI-powered insights using Google Gemini and GitHub integration",
+  icons: {
+    icon: [
+      { url: '/logo.png', sizes: '32x32', type: 'image/png' },
+      { url: '/logo.png', sizes: '16x16', type: 'image/png' },
+    ],
+    apple: '/logo.png',
+  },
 };
 
 export default function RootLayout({
