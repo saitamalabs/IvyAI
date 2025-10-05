@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Code, Sparkles, GitPullRequest, Globe, Github, Zap, Shield, Bot, Rocket, TestTube2, FileCode, Check, Star, Users, ArrowRight, Play } from 'lucide-react';
 import Image from 'next/image';
+import { AnimatedShinyText } from '@/components/ui/animated-shiny-text';
 import Header from './Header';
 
 export default function LandingPage() {
@@ -79,11 +80,15 @@ export default function LandingPage() {
           <div className="absolute inset-0 bg-grid-gray-900/[0.04] dark:bg-grid-white/[0.02] bg-[size:20px_20px]" />
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-32 relative">
             <div className="text-center max-w-5xl mx-auto">
-              {/* Badge */}
-              <Badge variant="secondary" className="mb-8 px-4 py-2 text-sm">
-                <Sparkles className="w-4 h-4 mr-2" />
-                Multi-Model AI: Claude 3.5 • Gemini 2.0 • GPT-4o
-              </Badge>
+              {/* Announcement Banner */}
+              <div className="mb-8 flex justify-center">
+                <div className="group relative inline-flex items-center justify-center rounded-full border border-blue-200/50 bg-blue-50 transition-all ease-in hover:cursor-pointer hover:bg-blue-100 dark:border-blue-800/50 dark:bg-blue-950/50 dark:hover:bg-blue-900/50 px-4 py-2">
+                  <AnimatedShinyText className="inline-flex items-center justify-center text-blue-900 dark:text-blue-100 transition ease-out hover:text-blue-700 hover:duration-300 dark:hover:text-blue-200">
+                    <span className="text-sm font-medium">🎉 IvyAI Now Live: Autonomous Multi-Agent Development - Try Free </span>
+                    <ArrowRight className="ml-1 size-3 transition-transform duration-300 ease-in-out group-hover:translate-x-0.5" />
+                  </AnimatedShinyText>
+                </div>
+              </div>
               
               {/* Headline */}
               <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
