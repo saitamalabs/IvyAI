@@ -3,12 +3,14 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import Header from './Header';
+import { AppSidebar } from '@/components/app-sidebar';
+import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
+import { Separator } from '@/components/ui/separator';
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { BentoCard, BentoGrid } from '@/components/ui/bento-grid';
 import { NumberTicker } from '@/components/ui/number-ticker';
 import { Particles } from '@/components/ui/particles';
 import { BorderBeam } from '@/components/ui/border-beam';
@@ -193,28 +195,47 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950">
-      <Header />
+    <SidebarProvider>
+      <AppSidebar />
+      <SidebarInset>
+        {/* Header with breadcrumb */}
+        <header className="sticky top-0 flex h-16 shrink-0 items-center gap-2 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4">
+          <SidebarTrigger className="-ml-1" />
+          <Separator orientation="vertical" className="mr-2 h-4" />
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem className="hidden md:block">
+                <BreadcrumbLink href="/dashboard">
+                  Dashboard
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator className="hidden md:block" />
+              <BreadcrumbItem>
+                <BreadcrumbPage>AI Agents</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        </header>
 
-      <main className="container mx-auto px-4 pt-24 pb-8">
-        {/* Welcome Section with Particles */}
-        <div className="relative mb-8 rounded-3xl bg-gradient-to-br from-blue-600/10 via-purple-600/10 to-pink-600/10 dark:from-blue-600/20 dark:via-purple-600/20 dark:to-pink-600/20 p-8 overflow-hidden">
-          <Particles
-            className="absolute inset-0"
-            quantity={50}
-            ease={80}
-            color="#ffffff"
-            refresh
-          />
-          <div className="relative z-10">
-            <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
-              Welcome back, {user?.name || user?.login}! 👋
-            </h2>
-            <p className="text-gray-600 dark:text-gray-400 text-lg">
-              Choose an AI agent below to get started
-            </p>
+        <div className="flex flex-1 flex-col gap-4 p-4 md:p-6">
+          {/* Welcome Section with Particles */}
+          <div className="relative mb-4 rounded-3xl bg-gradient-to-br from-blue-600/10 via-purple-600/10 to-pink-600/10 dark:from-blue-600/20 dark:via-purple-600/20 dark:to-pink-600/20 p-8 overflow-hidden">
+            <Particles
+              className="absolute inset-0"
+              quantity={50}
+              ease={80}
+              color="#ffffff"
+              refresh
+            />
+            <div className="relative z-10">
+              <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
+                Welcome back, {user?.name || user?.login}! 👋
+              </h2>
+              <p className="text-gray-600 dark:text-gray-400 text-lg">
+                Choose an AI agent from the sidebar to get started
+              </p>
+            </div>
           </div>
-        </div>
 
         {/* Stats Section */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
@@ -334,7 +355,8 @@ export default function Dashboard() {
             })}
           </div>
         )}
-      </main>
-    </div>
+        </div>
+      </SidebarInset>
+    </SidebarProvider>
   );
 }
