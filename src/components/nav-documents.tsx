@@ -28,6 +28,7 @@ import {
 export function NavDocuments({
   title = "Documents",
   items,
+  onItemClick,
 }: {
   title?: string
   items: {
@@ -35,8 +36,14 @@ export function NavDocuments({
     url: string
     icon: any
   }[]
+  onItemClick?: (agentId: string) => void
 }) {
   const { isMobile } = useSidebar()
+
+  const extractAgentId = (url: string) => {
+    const match = url.match(/\/agent\/([^/]+)/);
+    return match ? match[1] : '';
+  };
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
@@ -44,11 +51,17 @@ export function NavDocuments({
       <SidebarMenu>
         {items.map((item) => (
           <SidebarMenuItem key={item.name}>
-            <SidebarMenuButton asChild>
-              <a href={item.url}>
-                <item.icon className="w-4 h-4" />
-                <span>{item.name}</span>
-              </a>
+            <SidebarMenuButton 
+              onClick={() => {
+                const agentId = extractAgentId(item.url);
+                if (agentId && onItemClick) {
+                  onItemClick(agentId);
+                }
+              }}
+              className="cursor-pointer"
+            >
+              <item.icon className="w-4 h-4" />
+              <span>{item.name}</span>
             </SidebarMenuButton>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

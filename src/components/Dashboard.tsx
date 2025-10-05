@@ -11,11 +11,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
 import { NumberTicker } from '@/components/ui/number-ticker';
 import { Particles } from '@/components/ui/particles';
 import { BorderBeam } from '@/components/ui/border-beam';
 import { Meteors } from '@/components/ui/meteors';
 import { ShimmerButton } from '@/components/ui/shimmer-button';
+import AgentInterface from '@/components/AgentInterface';
+import { DashboardHome } from '@/components/DashboardHome';
 import { 
   Code2, 
   GitPullRequest, 
@@ -30,7 +33,13 @@ import {
   ArrowRight,
   Github,
   TrendingUp,
-  Star
+  Star,
+  MapPin,
+  Building2,
+  Link as LinkIcon,
+  Calendar,
+  Users,
+  ChevronLeft
 } from 'lucide-react';
 
 interface Feature {
@@ -154,21 +163,87 @@ export default function Dashboard() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedAgent, setSelectedAgent] = useState<string | null>(null);
+  const [githubStats, setGithubStats] = useState({
+    repos: 0,
+    publicRepos: 0,
+    followers: 0,
+    following: 0,
+  });
+  const [githubProfile, setGithubProfile] = useState({
+    location: '',
+    company: '',
+    blog: '',
+    createdAt: '',
+    htmlUrl: '',
+  });
 
-  // Simulate loading state
+  // Fetch real GitHub data
   useEffect(() => {
-    const timer = setTimeout(() => {
+    const fetchGitHubStats = async () => {
+      if (user?.login) {
+        try {
+          const response = await fetch(`https://api.github.com/users/${user.login}`);
+          if (response.ok) {
+            const data = await response.json();
+            setGithubStats({
+              repos: data.public_repos || 0,
+              publicRepos: data.public_repos || 0,
+              followers: data.followers || 0,
+              following: data.following || 0,
+            });
+            setGithubProfile({
+              location: data.location || '',
+              company: data.company || '',
+              blog: data.blog || '',
+              createdAt: data.created_at || '',
+              htmlUrl: data.html_url || '',
+            });
+          }
+        } catch (error) {
+          console.error('Failed to fetch GitHub stats:', error);
+        }
+      }
       setLoading(false);
-    }, 1000);
-    return () => clearTimeout(timer);
-  }, []);
+    };
 
-  // Stats data
+    const timer = setTimeout(() => {
+      fetchGitHubStats();
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [user]);
+
+  // Dynamic stats based on real data
   const stats = [
-    { icon: Bot, value: 9, label: 'Active Agents', color: 'text-blue-500' },
-    { icon: Github, value: 24, label: 'Repos Managed', color: 'text-purple-500' },
-    { icon: Code2, value: 156, label: 'Code Generated (K)', color: 'text-green-500' },
-    { icon: Star, value: 98, label: 'Success Rate (%)', color: 'text-yellow-500' },
+    { 
+      icon: Bot, 
+      value: FEATURES.length, 
+      label: 'AI Agents Available', 
+      color: 'text-blue-500',
+      suffix: ''
+    },
+    { 
+      icon: Github, 
+      value: githubStats.repos, 
+      label: 'GitHub Repositories', 
+      color: 'text-purple-500',
+      suffix: ''
+    },
+    { 
+      icon: Star, 
+      value: githubStats.followers, 
+      label: 'GitHub Followers', 
+      color: 'text-yellow-500',
+      suffix: ''
+    },
+    { 
+      icon: TrendingUp, 
+      value: githubStats.following, 
+      label: 'GitHub Following', 
+      color: 'text-green-500',
+      suffix: ''
+    },
   ];
 
   // Filter features by category
@@ -179,6 +254,18 @@ export default function Dashboard() {
   // Find hero card (AI Project Generator)
   const heroFeature = FEATURES.find(f => f.id === 'project-generator');
   const regularFeatures = FEATURES.filter(f => f.id !== 'project-generator');
+
+  // Handle agent selection
+  const handleAgentClick = (agentId: string) => {
+    setSelectedAgent(agentId);
+  };
+
+  const handleBackToDashboard = () => {
+    setSelectedAgent(null);
+  };
+
+  // Get selected agent details
+  const selectedAgentData = selectedAgent ? FEATURES.find(f => f.id === selectedAgent) : null;
 
   // Get gradient class based on category
   const getGradientClass = (category: string) => {
@@ -196,79 +283,96 @@ export default function Dashboard() {
 
   return (
     <SidebarProvider>
-      <AppSidebar />
+      <AppSidebar onAgentSelect={handleAgentClick} onDashboardClick={handleBackToDashboard} />
       <SidebarInset>
         {/* Header with breadcrumb */}
-        <header className="sticky top-0 flex h-16 shrink-0 items-center gap-2 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4">
+        <header className="sticky top-0 flex h-16 shrink-0 items-center gap-2 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 z-50">
           <SidebarTrigger className="-ml-1" />
           <Separator orientation="vertical" className="mr-2 h-4" />
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href="/dashboard">
+                <BreadcrumbLink 
+                  href="#" 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleBackToDashboard();
+                  }}
+                  className="cursor-pointer"
+                >
                   Dashboard
                 </BreadcrumbLink>
               </BreadcrumbItem>
-              <BreadcrumbSeparator className="hidden md:block" />
-              <BreadcrumbItem>
-                <BreadcrumbPage>AI Agents</BreadcrumbPage>
-              </BreadcrumbItem>
+              {selectedAgentData && (
+                <>
+                  <BreadcrumbSeparator className="hidden md:block" />
+                  <BreadcrumbItem>
+                    <BreadcrumbPage>{selectedAgentData.name}</BreadcrumbPage>
+                  </BreadcrumbItem>
+                </>
+              )}
+              {!selectedAgent && (
+                <>
+                  <BreadcrumbSeparator className="hidden md:block" />
+                  <BreadcrumbItem>
+                    <BreadcrumbPage>AI Agents</BreadcrumbPage>
+                  </BreadcrumbItem>
+                </>
+              )}
             </BreadcrumbList>
           </Breadcrumb>
         </header>
 
         <div className="flex flex-1 flex-col gap-4 p-4 md:p-6">
-          {/* Welcome Section with Particles */}
-          <div className="relative mb-4 rounded-3xl bg-gradient-to-br from-blue-600/10 via-purple-600/10 to-pink-600/10 dark:from-blue-600/20 dark:via-purple-600/20 dark:to-pink-600/20 p-8 overflow-hidden">
-            <Particles
-              className="absolute inset-0"
-              quantity={50}
-              ease={80}
-              color="#ffffff"
-              refresh
-            />
-            <div className="relative z-10">
-              <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
-                Welcome back, {user?.name || user?.login}! 👋
-              </h2>
-              <p className="text-gray-600 dark:text-gray-400 text-lg">
-                Choose an AI agent from the sidebar to get started
-              </p>
-            </div>
-          </div>
+          {/* Show Agent Interface if selected */}
+          {selectedAgent && selectedAgentData ? (
+            <>
+              <div className="mb-4">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={handleBackToDashboard}
+                  className="gap-2"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                  Back to Dashboard
+                </Button>
+              </div>
+              <AgentInterface 
+                agentId={selectedAgent}
+                agentName={selectedAgentData.name}
+                agentDescription={selectedAgentData.description}
+                systemPrompt={`You are ${selectedAgentData.name}, ${selectedAgentData.description}`}
+              />
+            </>
+          ) : (
+            <>
+              {/* Dashboard Home View */}
+              <DashboardHome 
+                user={user}
+                githubStats={githubStats}
+                githubProfile={githubProfile}
+                loading={loading}
+              />
 
-        {/* Stats Section */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          {stats.map((stat, index) => {
-            const Icon = stat.icon;
-            return (
-              <Card key={index} className="hover:shadow-lg transition-all duration-300 border-2">
-                <CardContent className="pt-6 text-center">
-                  <Icon className={`w-8 h-8 mx-auto mb-2 ${stat.color}`} />
-                  <div className="text-3xl font-bold text-gray-900 dark:text-white mb-1">
-                    <NumberTicker value={stat.value} />
-                    {stat.label.includes('K') && 'K'}
-                    {stat.label.includes('%') && '%'}
-                  </div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">
-                    {stat.label.replace('(K)', '').replace('(%)', '')}
-                  </div>
-                </CardContent>
+              {/* Quick Access to Agents */}
+              <Card className="mt-6 border-2">
+                <CardHeader>
+                  <CardTitle>Quick Access to AI Agents</CardTitle>
+                  <CardDescription>Click on any agent from the sidebar or cards below to get started</CardDescription>
+                </CardHeader>
               </Card>
-            );
-          })}
-        </div>
 
-        {/* Category Filter */}
-        <Tabs defaultValue="all" className="mb-6" onValueChange={setSelectedCategory}>
-          <TabsList className="grid w-full max-w-2xl mx-auto grid-cols-5">
-            <TabsTrigger value="all">All</TabsTrigger>
-            <TabsTrigger value="generation">Generation</TabsTrigger>
-            <TabsTrigger value="code review">Code Review</TabsTrigger>
-            <TabsTrigger value="testing">Testing</TabsTrigger>
-            <TabsTrigger value="security">Security</TabsTrigger>
-          </TabsList>
-        </Tabs>
+              {/* Category Filter */}
+              <Tabs defaultValue="all" className="my-6" onValueChange={setSelectedCategory}>
+                <TabsList className="grid w-full max-w-2xl mx-auto grid-cols-5">
+                  <TabsTrigger value="all">All</TabsTrigger>
+                  <TabsTrigger value="generation">Generation</TabsTrigger>
+                  <TabsTrigger value="code review">Code Review</TabsTrigger>
+                  <TabsTrigger value="testing">Testing</TabsTrigger>
+                  <TabsTrigger value="security">Security</TabsTrigger>
+                </TabsList>
+              </Tabs>
 
         {/* Bento Grid with Features */}
         {loading ? (
@@ -283,7 +387,7 @@ export default function Dashboard() {
             {heroFeature && selectedCategory === 'all' && (
               <Card 
                 className="col-span-1 md:col-span-2 md:row-span-2 relative overflow-hidden cursor-pointer group border-2 hover:border-purple-500 transition-all"
-                onClick={() => router.push(`/agent/${heroFeature.id}`)}
+                onClick={() => handleAgentClick(heroFeature.id)}
               >
                 <div className={`absolute inset-0 bg-gradient-to-br ${getGradientClass(heroFeature.category)} opacity-50`} />
                 <BorderBeam size={250} duration={12} delay={9} />
@@ -323,7 +427,7 @@ export default function Dashboard() {
                 <Card 
                   key={feature.id}
                   className="relative group cursor-pointer hover:shadow-2xl hover:shadow-blue-500/20 transition-all duration-300 hover:-translate-y-1 border-2 hover:border-blue-500"
-                  onClick={() => router.push(`/agent/${feature.id}`)}
+                  onClick={() => handleAgentClick(feature.id)}
                 >
                   <div className={`absolute inset-0 bg-gradient-to-br ${getGradientClass(feature.category)} opacity-0 group-hover:opacity-100 transition-opacity`} />
                   
@@ -355,6 +459,8 @@ export default function Dashboard() {
             })}
           </div>
         )}
+            </>
+          )}
         </div>
       </SidebarInset>
     </SidebarProvider>
