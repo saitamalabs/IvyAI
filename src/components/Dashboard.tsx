@@ -7,6 +7,13 @@ import Header from './Header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { BentoCard, BentoGrid } from '@/components/ui/bento-grid';
+import { NumberTicker } from '@/components/ui/number-ticker';
+import { Particles } from '@/components/ui/particles';
+import { BorderBeam } from '@/components/ui/border-beam';
+import { Meteors } from '@/components/ui/meteors';
+import { ShimmerButton } from '@/components/ui/shimmer-button';
 import { 
   Code2, 
   GitPullRequest, 
@@ -18,7 +25,10 @@ import {
   Shield,
   Zap,
   MessageSquare,
-  ArrowRight
+  ArrowRight,
+  Github,
+  TrendingUp,
+  Star
 } from 'lucide-react';
 
 interface Feature {
@@ -141,72 +151,189 @@ export default function Dashboard() {
   const { user } = useAuth();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
+  const [selectedCategory, setSelectedCategory] = useState('all');
 
-  // Simulate loading state (remove this when integrating with real data fetching)
+  // Simulate loading state
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false);
-    }, 1000); // 1 second loading simulation
-
+    }, 1000);
     return () => clearTimeout(timer);
   }, []);
 
+  // Stats data
+  const stats = [
+    { icon: Bot, value: 9, label: 'Active Agents', color: 'text-blue-500' },
+    { icon: Github, value: 24, label: 'Repos Managed', color: 'text-purple-500' },
+    { icon: Code2, value: 156, label: 'Code Generated (K)', color: 'text-green-500' },
+    { icon: Star, value: 98, label: 'Success Rate (%)', color: 'text-yellow-500' },
+  ];
+
+  // Filter features by category
+  const filteredFeatures = selectedCategory === 'all' 
+    ? FEATURES 
+    : FEATURES.filter(f => f.category.toLowerCase() === selectedCategory);
+
+  // Find hero card (AI Project Generator)
+  const heroFeature = FEATURES.find(f => f.id === 'project-generator');
+  const regularFeatures = FEATURES.filter(f => f.id !== 'project-generator');
+
+  // Get gradient class based on category
+  const getGradientClass = (category: string) => {
+    const gradients: Record<string, string> = {
+      'Generation': 'from-purple-500/10 to-purple-600/5',
+      'Code Review': 'from-blue-500/10 to-blue-600/5',
+      'Repository': 'from-green-500/10 to-green-600/5',
+      'Testing': 'from-pink-500/10 to-pink-600/5',
+      'Security': 'from-red-500/10 to-red-600/5',
+      'Documentation': 'from-indigo-500/10 to-indigo-600/5',
+      'Optimization': 'from-orange-500/10 to-orange-600/5',
+    };
+    return gradients[category] || 'from-gray-500/10 to-gray-600/5';
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950">
       <Header />
 
       <main className="container mx-auto px-4 pt-24 pb-8">
-        {/* Welcome Section */}
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            Welcome back, {user?.name || user?.login}!
-          </h2>
-          <p className="text-gray-600 dark:text-gray-400">
-            Choose an AI agent below to get started
-          </p>
+        {/* Welcome Section with Particles */}
+        <div className="relative mb-8 rounded-3xl bg-gradient-to-br from-blue-600/10 via-purple-600/10 to-pink-600/10 dark:from-blue-600/20 dark:via-purple-600/20 dark:to-pink-600/20 p-8 overflow-hidden">
+          <Particles
+            className="absolute inset-0"
+            quantity={50}
+            ease={80}
+            color="#ffffff"
+            refresh
+          />
+          <div className="relative z-10">
+            <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
+              Welcome back, {user?.name || user?.login}! 👋
+            </h2>
+            <p className="text-gray-600 dark:text-gray-400 text-lg">
+              Choose an AI agent below to get started
+            </p>
+          </div>
         </div>
 
-        {/* Features Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {loading ? (
-            // Show skeleton loaders while loading
-            Array.from({ length: 9 }).map((_, index) => (
+        {/* Stats Section */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          {stats.map((stat, index) => {
+            const Icon = stat.icon;
+            return (
+              <Card key={index} className="hover:shadow-lg transition-all duration-300 border-2">
+                <CardContent className="pt-6 text-center">
+                  <Icon className={`w-8 h-8 mx-auto mb-2 ${stat.color}`} />
+                  <div className="text-3xl font-bold text-gray-900 dark:text-white mb-1">
+                    <NumberTicker value={stat.value} />
+                    {stat.label.includes('K') && 'K'}
+                    {stat.label.includes('%') && '%'}
+                  </div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">
+                    {stat.label.replace('(K)', '').replace('(%)', '')}
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+
+        {/* Category Filter */}
+        <Tabs defaultValue="all" className="mb-6" onValueChange={setSelectedCategory}>
+          <TabsList className="grid w-full max-w-2xl mx-auto grid-cols-5">
+            <TabsTrigger value="all">All</TabsTrigger>
+            <TabsTrigger value="generation">Generation</TabsTrigger>
+            <TabsTrigger value="code review">Code Review</TabsTrigger>
+            <TabsTrigger value="testing">Testing</TabsTrigger>
+            <TabsTrigger value="security">Security</TabsTrigger>
+          </TabsList>
+        </Tabs>
+
+        {/* Bento Grid with Features */}
+        {loading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {Array.from({ length: 9 }).map((_, index) => (
               <AgentCardSkeleton key={`skeleton-${index}`} />
-            ))
-          ) : (
-            // Show actual agent cards when loaded
-            FEATURES.map((feature) => {
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 auto-rows-fr">
+            {/* Hero Card - AI Project Generator */}
+            {heroFeature && selectedCategory === 'all' && (
+              <Card 
+                className="col-span-1 md:col-span-2 md:row-span-2 relative overflow-hidden cursor-pointer group border-2 hover:border-purple-500 transition-all"
+                onClick={() => router.push(`/agent/${heroFeature.id}`)}
+              >
+                <div className={`absolute inset-0 bg-gradient-to-br ${getGradientClass(heroFeature.category)} opacity-50`} />
+                <BorderBeam size={250} duration={12} delay={9} />
+                <Meteors number={20} />
+                
+                <CardContent className="relative z-10 h-full flex flex-col justify-between p-6">
+                  <div>
+                    <div className="flex items-start justify-between mb-6">
+                      <div className={`w-20 h-20 rounded-2xl ${heroFeature.bgColor} flex items-center justify-center group-hover:scale-110 transition-transform`}>
+                        <heroFeature.icon className={`w-10 h-10 ${heroFeature.color}`} />
+                      </div>
+                      <Badge variant="secondary" className="text-xs">
+                        {heroFeature.category}
+                      </Badge>
+                    </div>
+                    <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+                      {heroFeature.name}
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-400 text-lg">
+                      {heroFeature.description}
+                    </p>
+                  </div>
+                  
+                  <ShimmerButton className="w-full mt-6">
+                    <MessageSquare className="w-4 h-4 mr-2" />
+                    Launch Agent
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </ShimmerButton>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Regular Agent Cards */}
+            {(selectedCategory === 'all' ? regularFeatures : filteredFeatures).map((feature) => {
               const Icon = feature.icon;
               return (
                 <Card 
                   key={feature.id}
-                  className="group hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 cursor-pointer border-2 hover:border-blue-500"
+                  className="relative group cursor-pointer hover:shadow-2xl hover:shadow-blue-500/20 transition-all duration-300 hover:-translate-y-1 border-2 hover:border-blue-500"
                   onClick={() => router.push(`/agent/${feature.id}`)}
                 >
-                  <CardHeader className="pb-3">
-                    <div className={`w-16 h-16 rounded-2xl ${feature.bgColor} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
-                      <Icon className={`w-8 h-8 ${feature.color}`} />
+                  <div className={`absolute inset-0 bg-gradient-to-br ${getGradientClass(feature.category)} opacity-0 group-hover:opacity-100 transition-opacity`} />
+                  
+                  <CardContent className="relative z-10 p-6">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className={`w-14 h-14 rounded-xl ${feature.bgColor} flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all`}>
+                        <Icon className={`w-7 h-7 ${feature.color}`} />
+                      </div>
+                      <Badge variant="outline" className="text-xs">
+                        {feature.category}
+                      </Badge>
                     </div>
-                    <Badge variant="outline" className="w-fit mb-2 text-xs">
-                      {feature.category}
-                    </Badge>
-                    <CardTitle className="text-lg">{feature.name}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <CardDescription className="text-sm leading-relaxed">
+                    
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
+                      {feature.name}
+                    </h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
                       {feature.description}
-                    </CardDescription>
-                    <div className="mt-4 flex items-center gap-2 text-blue-600 dark:text-blue-400 text-sm font-medium">
+                    </p>
+                    
+                    <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400 text-sm font-medium group-hover:gap-3 transition-all">
                       <MessageSquare className="w-4 h-4" />
                       <span>Open Agent</span>
-                      <ArrowRight className="w-4 h-4 ml-auto" />
+                      <ArrowRight className="w-4 h-4 ml-auto group-hover:translate-x-1 transition-transform" />
                     </div>
                   </CardContent>
                 </Card>
               );
-            })
-          )}
-        </div>
+            })}
+          </div>
+        )}
       </main>
     </div>
   );
