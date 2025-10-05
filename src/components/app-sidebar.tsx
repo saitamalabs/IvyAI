@@ -6,6 +6,7 @@ import {
   IconHelp,
   IconSettings,
   IconSearch,
+  IconCreditCard,
 } from "@tabler/icons-react"
 import { 
   Code2, 
@@ -41,6 +42,19 @@ const agentCategories = {
       title: "Dashboard",
       url: "/dashboard",
       icon: IconDashboard,
+      isHome: true,
+    },
+    {
+      title: "Features",
+      url: "/#features",
+      icon: IconSettings,
+      isExternal: true,
+    },
+    {
+      title: "Pricing",
+      url: "/#pricing",
+      icon: IconCreditCard,
+      isExternal: true,
     },
   ],
   generation: [
@@ -102,24 +116,19 @@ const agentCategories = {
   ],
   navSecondary: [
     {
-      title: "Settings",
-      url: "/settings",
-      icon: IconSettings,
-    },
-    {
       title: "Get Help",
-      url: "/help",
+      url: "https://github.com",
       icon: IconHelp,
-    },
-    {
-      title: "Search",
-      url: "/search",
-      icon: IconSearch,
     },
   ],
 }
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
+  onAgentSelect?: (agentId: string) => void;
+  onDashboardClick?: () => void;
+}
+
+export function AppSidebar({ onAgentSelect, onDashboardClick, ...props }: AppSidebarProps) {
   const { user } = useAuth()
 
   return (
@@ -128,60 +137,64 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
-              asChild
-              className="data-[slot=sidebar-menu-button]:!p-1.5"
+              onClick={onDashboardClick}
+              className="data-[slot=sidebar-menu-button]:!p-1.5 cursor-pointer"
             >
-              <a href="/dashboard" className="flex items-center gap-2">
-                <Image 
-                  src="/logo.png" 
-                  alt="IvyAI Logo" 
-                  width={20} 
-                  height={20}
-                  className="w-5 h-5"
-                />
-                <span className="text-base font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">IvyAI</span>
-              </a>
+              <Image 
+                src="/logo.png" 
+                alt="IvyAI Logo" 
+                width={20} 
+                height={20}
+                className="w-5 h-5"
+              />
+              <span className="text-base font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">IvyAI</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={agentCategories.navMain} />
+        <NavMain items={agentCategories.navMain} onDashboardClick={onDashboardClick} />
         
         {/* Generation Agents */}
         <NavDocuments 
           title="Generation" 
-          items={agentCategories.generation} 
+          items={agentCategories.generation}
+          onItemClick={onAgentSelect}
         />
         
         {/* Code Review Agents */}
         <NavDocuments 
           title="Code Review" 
-          items={agentCategories.codeReview} 
+          items={agentCategories.codeReview}
+          onItemClick={onAgentSelect}
         />
         
         {/* Repository Agents */}
         <NavDocuments 
           title="Repository" 
-          items={agentCategories.repository} 
+          items={agentCategories.repository}
+          onItemClick={onAgentSelect}
         />
         
         {/* Optimization Agents */}
         <NavDocuments 
           title="Optimization" 
-          items={agentCategories.optimization} 
+          items={agentCategories.optimization}
+          onItemClick={onAgentSelect}
         />
         
         {/* Testing Agents */}
         <NavDocuments 
           title="Testing" 
-          items={agentCategories.testing} 
+          items={agentCategories.testing}
+          onItemClick={onAgentSelect}
         />
         
         {/* Documentation Agents */}
         <NavDocuments 
           title="Documentation" 
-          items={agentCategories.documentation} 
+          items={agentCategories.documentation}
+          onItemClick={onAgentSelect}
         />
         
         <NavSecondary items={agentCategories.navSecondary} className="mt-auto" />
